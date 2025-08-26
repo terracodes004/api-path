@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>JavaScript API Mastery — Home</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#9aa7d4; --accent:#60a5fa;
+      --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#e6eefc;background:linear-gradient(180deg,#071029 0%, #061427 100%);-webkit-font-smoothing:antialiased}
+    header{padding:28px 20px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04)}
+    header h1{margin:0;font-size:1.6rem}
+    header p{margin:.4rem 0 0;color:var(--muted)}
+    main{max-width:1100px;margin:28px auto;padding:0 18px}
+    .grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); padding:18px;border-radius:12px;box-shadow:0 6px 30px rgba(2,6,23,0.6); min-height:130px; display:flex; flex-direction:column; justify-content:space-between}
+    .tier-label{font-weight:700; padding:.25rem .5rem; border-radius:999px; display:inline-block}
+    .s{background:linear-gradient(90deg,#059669,#10b981); color:#042a20}
+    .a{background:linear-gradient(90deg,#2563eb,#60a5fa); color:#07103b}
+    .b{background:linear-gradient(90deg,#f59e0b,#fbbf24); color:#3a2b02}
+    .c{background:linear-gradient(90deg,#fb923c,#fb923c); color:#2a1200}
+    .d{background:linear-gradient(90deg,#ef4444,#f97316); color:#330b00}
+    .f{background:linear-gradient(90deg,#6b7280,#9ca3af); color:#061025}
+    a.button{display:inline-block;margin-top:12px;padding:8px 12px;border-radius:8px;background:var(--accent);color:#042a4a;text-decoration:none;font-weight:600}
+    footer{color:var(--muted);text-align:center;padding:24px 10px;font-size:.95rem}
+    @media (max-width:700px){ header h1{font-size:1.2rem} .card{min-height:120px} }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mastering JavaScript APIs — Course Hub</h1>
+    <p>A practical, step-by-step course. Start at S-Tier (the essentials) and work outward.</p>
+  </header>
+
+  <main>
+    <section class="grid" aria-label="Tier selection">
+      <article class="card">
+        <div>
+          <div class="tier-label s">S • Essentials</div>
+          <h3 style="margin:.5rem 0">Critical APIs</h3>
+          <p style="color:var(--muted);margin:0">DOM, Events, Fetch, LocalStorage, Service Workers, Web Workers, Canvas</p>
+        </div>
+        <div><a class="button" href="s-tier.html">Open S-Tier</a></div>
+      </article>
+
+      <article class="card">
+        <div>
+          <div class="tier-label a">A • Advanced</div>
+          <h3 style="margin:.5rem 0">Powerful & commonly used</h3>
+          <p style="color:var(--muted);margin:0">IndexedDB, WebRTC, Web Audio, WebGL, Cache API</p>
+        </div>
+        <div><a class="button" href="a-tier.html">Open A-Tier</a></div>
+      </article>
+
+      <article class="card">
+        <div>
+          <div class="tier-label b">B • Helpful</div>
+          <h3 style="margin:.5rem 0">Situational utilities</h3>
+          <p style="color:var(--muted);margin:0">SSE, Streams, Background Sync, Intl, IntersectionObserver</p>
+        </div>
+        <div><a class="button" href="b-tier.html">Open B-Tier</a></div>
+      </article>
+
+      <article class="card">
+        <div>
+          <div class="tier-label c">C • Niche</div>
+          <h3 style="margin:.5rem 0">Occasional use</h3>
+          <p style="color:var(--muted);margin:0">EyeDropper, Web Share, WebHID, File System Access</p>
+        </div>
+        <div><a class="button" href="c-tier.html">Open C-Tier</a></div>
+      </article>
+
+      <article class="card">
+        <div>
+          <div class="tier-label d">D • Rare</div>
+          <h3 style="margin:.5rem 0">Less common or specialized</h3>
+          <p style="color:var(--muted);margin:0">Battery (limited), Gamepad, Device Motion</p>
+        </div>
+        <div><a class="button" href="d-tier.html">Open D-Tier</a></div>
+      </article>
+
+      <article class="card">
+        <div>
+          <div class="tier-label f">F • Legacy</div>
+          <h3 style="margin:.5rem 0">Historical / avoid</h3>
+          <p style="color:var(--muted);margin:0">AppCache, XHR-only flows (prefer Fetch)</p>
+        </div>
+        <div><a class="button" href="f-tier.html">Open F-Tier</a></div>
+      </article>
+    </section>
+  </main>
+
+  <footer>© 2025 — Built as an offline-friendly course. Open <code>index.html</code> locally or serve to enable Service Worker examples.</footer>
+    <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(() => console.log("Service Worker registered"))
+        .catch(err => console.log("SW registration failed:", err));
+    }
+  </script>
+</body>
+</html>

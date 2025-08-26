@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vanilla JavaScript Web APIs — Step-by-Step Course (S→F tiers)</title>
+  <style>
+    :root{
+      --bg:#0b1020; --panel:#121735; --ink:#e8ecff; --muted:#a9b1d6;
+      --brand:#7c9cff; --brand-2:#8df0c8; --warn:#ffcc66; --bad:#ff7a7a;
+      --ok:#7cffbe; --code:#0b0f22; --chip:#2a315c; --border:#202552;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Helvetica,Arial;
+      color:var(--ink); background: radial-gradient(1200px 800px at 10% -10%, #1b2150 0,#0b1020 60%) fixed;
+    }
+    a{color:var(--brand)}
+    code,kbd,pre{font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+    header{
+      position:sticky; top:0; z-index:50; backdrop-filter:saturate(140%) blur(8px);
+      background:linear-gradient(180deg, rgba(11,16,32,.85), rgba(11,16,32,.55));
+      border-bottom:1px solid var(--border);
+    }
+    .wrap{display:grid; grid-template-columns: 300px 1fr; gap:0; min-height:100vh}
+    @media (max-width: 960px){ .wrap{grid-template-columns:1fr} .sidebar{position:sticky; top:56px; z-index:40} }
+    .toolbar{
+      display:flex; align-items:center; gap:.75rem; padding:.75rem 1rem;
+    }
+    .tagline{flex:1}
+    .toolbar h1{font-size:1.05rem; margin:.2rem 0}
+    .toolbar small{color:var(--muted)}
+    .searchbar{
+      display:flex; gap:.5rem; padding:.5rem 1rem 1rem; border-bottom:1px solid var(--border)
+    }
+    .searchbar input,.searchbar select{
+      width:100%; padding:.6rem .8rem; background:#0e1430; color:var(--ink); border:1px solid var(--border);
+      border-radius:12px; outline: none;
+    }
+    .sidebar{background:linear-gradient(180deg, #0c1330, #0a1129); border-right:1px solid var(--border)}
+    .chips{display:flex; flex-wrap:wrap; gap:.5rem; padding: .6rem 1rem 1rem}
+    .chip{
+      user-select:none; font-size:.85rem; padding:.35rem .6rem; border-radius:999px; background:var(--chip); color:var(--ink);
+      border:1px solid var(--border); cursor:pointer; transition:.15s transform;
+    }
+    .chip.active{outline:2px solid var(--brand)}
+    main{padding: 1rem; max-width:1100px; margin:0 auto}
+    .card{
+      background:linear-gradient(180deg,#0f1540,#0c1232); border:1px solid var(--border);
+      border-radius:18px; padding:1rem 1.1rem; margin:1rem 0; box-shadow:var(--shadow);
+    }
+    .card h2{margin:.2rem 0 .6rem; font-size:1.15rem;}
+    .meta{display:flex; gap:.6rem; flex-wrap:wrap; color:var(--muted); font-size:.9rem; margin-bottom:.5rem}
+    .rank{display:inline-flex; align-items:center; gap:.4rem; font-weight:700; letter-spacing:.02em; padding:.2rem .55rem; border-radius:999px}
+    .S{background:#1a3a1f; color:#adffcf; border:1px solid #1f7a3f}
+    .A{background:#12363f; color:#87e6ff; border:1px solid #2e88a3}
+    .B{background:#3a2b12; color:#ffd68a; border:1px solid #8a6a2a}
+    .C{background:#3a1d1d; color:#ffb1b1; border:1px solid #8a3030}
+    .D{background:#302236; color:#deb4ff; border:1px solid #6a3e8a}
+    .F{background:#3b1a1a; color:#ff9b9b; border:1px solid #a23535}
+    .cats{display:flex; gap:.4rem; flex-wrap:wrap}
+    details{border:1px dashed var(--border); border-radius:14px; padding:.6rem .8rem; background:#0b1131}
+    details summary{cursor:pointer; font-weight:600}
+    pre{
+      background:linear-gradient(180deg,#0a0e26,#0b0f22); padding: .85rem 1rem; border-radius:14px; overflow:auto;
+      border:1px solid #20264f; position:relative;
+    }
+    .btns{display:flex; gap:.5rem; flex-wrap:wrap; margin:.5rem 0}
+    button{
+      background:linear-gradient(180deg,#2b57d1,#1f47b7); color:white; border:none; padding:.55rem .8rem; border-radius:12px; cursor:pointer;
+      box-shadow:0 6px 18px rgba(0,0,0,.25); transition: .15s transform;
+    }
+    button:hover{transform: translateY(-1px)}
+    button.secondary{background:#273058}
+    .note{color:var(--muted); font-size:.95rem}
+    .grid{display:grid; gap:1rem}
+    @media (min-width: 900px){ .grid.two{grid-template-columns:1fr 1fr} .grid.three{grid-template-columns:repeat(3,1fr)} }
+    .demo{background:#0b1131; border:1px dashed var(--border); border-radius:14px; padding:.8rem}
+    .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+    .hidden{display:none !important}
+    .tiny{font-size:.85rem; color:var(--muted)}
+    .kbd{kbd{background:#20264f; padding:.1rem .35rem; border-radius:6px}}
+    .footer{margin:2rem 0; color:var(--muted)}
+  </style>
+</head>
+<body>
+<header>
+  <div class="toolbar">
+    <div class="tagline">
+      <h1>Vanilla JS Web APIs — Step-by-Step (with S→F tiers)</h1>
+      <small>Interactive notes • copy-ready snippets • demos where safe • focus on practical workflows</small>
+    </div>
+    <div>
+      <button id="toggleSidebar" class="secondary" aria-expanded="true">☰ Menu</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside class="sidebar" id="sidebar">
+    <div class="searchbar">
+      <input id="q" placeholder="Search APIs, use-cases…" aria-label="Search" />
+    </div>
+    <div class="searchbar">
+      <select id="rankFilter" aria-label="Filter by tier">
+        <option value="">All tiers</option>
+        <option>S</option><option>A</option><option>B</option><option>C</option><option>D</option><option>F</option>
+      </select>
+    </div>
+    <div class="chips" id="catChips">
+      <!-- categories injected -->
+    </div>
+  </aside>
+
+  <main id="content">
+    <!-- INTRO -->
+    <section class="card">
+      <h2>How to use this book</h2>
+      <div class="grid two">
+        <div>
+          <ol>
+            <li>Pick an API, read the <b>Goal</b>, then follow the numbered <b>Steps</b>.</li>
+            <li>Click <b>Copy</b> to grab full snippets. Use the <b>Try it</b> demo blocks where available.</li>
+            <li>Skim <b>Pitfalls</b> for gotchas (permissions, HTTPS, cross-origin, etc.).</li>
+            <li>Use the search and filters to jump between categories and S→F tiers.</li>
+          </ol>
+          <p class="note">Legend: <span class="rank S">S</span> must-know daily drivers; <span class="rank A">A</span> powerful & common; <span class="rank B">B</span> situational; <span class="rank C">C</span> niche/limited; <span class="rank D">D</span> rare; <span class="rank F">F</span> avoid/obsolete.</p>
+        </div>
+        <div>
+          <p><b>Safety/Support</b>: Some demos need HTTPS + user gestures. If your browser blocks a demo, read the code + notes first.</p>
+          <ul class="note">
+            <li>Service workers, notifications, clipboard write, screen capture: <b>HTTPS only</b>.</li>
+            <li>Media/GPS require <b>permission</b> & user interaction.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========= API MODULES ========= -->
+
+    <!-- DOM CORE -->
+    <section class="card api" data-cat="DOM" data-rank="S" data-title="DOM Core & Selectors">
+      <h2>DOM Core & Selectors <span class="rank S">S</span></h2>
+      <div class="meta">
+        <span>Category: DOM</span><span class="cats"><span>querySelector</span><span>classList</span><span>dataset</span></span>
+      </div>
+      <p><b>Goal:</b> Select, create, and update elements efficiently; wire events with delegation.</p>
+      <details open>
+        <summary>Steps</summary>
+        <ol>
+          <li>Select once, reuse: <code>const $ = (s,el=document)=>el.querySelector(s)</code>; for many: <code>$$ = (s,el=document)=>[...el.querySelectorAll(s)]</code></li>
+          <li>Create fragments for batch DOM ops: <code>const frag = document.createDocumentFragment()</code>.</li>
+          <li>Use <code>classList</code>, <code>dataset</code>, and attribute setters; avoid innerHTML when possible for safety.</li>
+          <li>Delegate events from a stable parent with <code>closest()</code>.</li>
+          <li>Measure with <code>getBoundingClientRect()</code> when you need layout values.</li>
+        </ol>
+      </details>
+      <div class="grid two">
+        <div>
+<pre><button class="copy">Copy</button><code class="lang-js">
+// DOM helpers + delegation example
+const $  = (s,el=document)=>el.querySelector(s);
+const $$ = (s,el=document)=>[...el.querySelectorAll(s)];
+
+const list = $("#dom-list");
+$("#add").addEventListener("click", () => {
+  const li = document.createElement("li");
+  li.className = "todo";
+  li.dataset.id = crypto.randomUUID();
+  li.textContent = "New item " + (list.children.length+1);
+  list.append(li);
+});
+
+// Delegation
+list.addEventListener("click", (e) => {
+  const item = e.target.closest("li.todo");
+  if (!item) return;
+  item.classList.toggle("done");
+});
+</code></pre>
+        </div>
+        <div class="demo">
+          <div class="btns">
+            <button id="add">+ Add item</button>
+          </div>
+          <ul id="dom-list"></ul>
+          <p class="tiny">Click an item to toggle “done”.</p>
+        </div>
+      </div>
+      <details>
+        <summary>Pitfalls</summary>
+        <ul class="note">
+          <li>Minimize layout thrash: read layout, then write style (or batch in <code>requestAnimationFrame</code>).</li>
+          <li>Prefer <code>textContent</code> over <code>innerHTML</code> unless you really need HTML.</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- EVENTS -->
+    <section class="card api" data-cat="DOM" data-rank="S" data-title="Events & Delegation">
+      <h2>Events & Delegation <span class="rank S">S</span></h2>
+      <p><b>Goal:</b> Master capture/bubble phases, passive listeners, and custom events.</p>
+      <details open><summary>Steps</summary>
+        <ol>
+          <li>Passive scroll listeners: <code>addEventListener('touchmove', fn, {passive:true})</code>.</li>
+          <li>Stop costly handlers with <code>AbortController</code> to clean up many listeners at once.</li>
+          <li>Emit custom events with <code>new CustomEvent('name',{detail})</code>.</li>
+        </ol>
+      </details>
+      <pre><button class="copy">Copy</button><code class="lang-js">
+// Abortable listeners + custom event
+const ac = new AbortController();
+window.addEventListener("scroll", () => {/* ... */}, {passive:true, signal: ac.signal});
+
+const bus = document.createElement("div");
+bus.addEventListener("user:login", (e)=>console.log("Welcome", e.detail));
+bus.dispatchEvent(new CustomEvent("user:login",{detail:{name:"Ayo"}}));
+
+// later: ac.abort();
+</code></pre>
+      <p class="note">Use delegation from a stable ancestor to manage dynamic lists.</p>
+    </section>
+
+    <!-- FETCH -->
+    <section class="card api" data-cat="Network" data-rank="S" data-title="Fetch & JSON">
+      <h2>Fetch & JSON <span class="rank S">S</span></h2>
+      <p><b>Goal:</b> GET/POST with <code>fetch</code>, handle errors, timeouts, and JSON.</p>
+      <details open><summary>Steps</summary>
+        <ol>
+          <li>GET JSON: <code>const data = await (await fetch(url)).json()</code></li>
+          <li>POST JSON: set <code>method</code>, <code>headers</code>, <code>body: JSON.stringify()</code>.</li>
+          <li>Timeouts: wrap fetch with <code>AbortController</code>.</li>
+          <li>Handle non-2xx with <code>if(!res.ok) throw...</code></li>
+          <li>Stream big files via <code>res.body</code> (see Streams module).</li>
+        </ol>
+      </details>
+      <pre><button class="copy">Copy</button><code class="lang-js">
+// Fetch helpers
+async function getJSON(url, opts={}) {
+  const res = await fetch(url, opts);
+  if (!res.ok) throw new Error(res.status + " " + res.statusText);
+  return res.json();
+}
+async function postJSON(url, data, opts={}) {
+  const res = await fetch(url,{method:"POST", headers:{'Content-Type':'application/json'}, body:JSON.stringify(data), ...opts});
+  if (!res.ok) throw new Error(res.status + " " + res.statusText);
+  return res.json();
+}
+// Timeout wrapper
+async function fetchWithTimeout(url, ms=8000, opts={}) {
+  const ac = new AbortController(); const to = setTimeout(()=>ac.abort(), ms);
+  try { return await fetch(url, {...opts, signal:ac.signal}); }
+  finally { clearTimeout(to); }
+}
+</code></pre>
+      <p class="note">CORS and credentials depend on server headers. See MDN “Fetch API” for details.</p>
+    </section>
+
+    <!-- STREAMS -->
+    <section class="card api" data-cat="Network" data-rank="A" data-title="Streams API">
+      <h2>Streams API <span class="rank A">A</span></h2>
+      <p><b>Goal:</b> Read chunked data and transform it on the fly.</p>
+      <details open><summary>Steps</summary>
+        <ol>
+          <li>Create a <code>ReadableStream</code> from a generator.</li>
+          <li>Transform with <code>TransformStream</code> (e.g., uppercasing text).</li>
+          <li>Pipe to <code>WritableStream</code> (append to UI, write to file via FS Access API, etc.).</li>
+        </ol>
+      </details>
+      <div class="grid two">
+        <div>
+<pre><button class="copy">Copy</button><code class="lang-js">
+// Local demo: stream 1..10 -> map -> append to <textarea>
+async function runStreamsDemo() {
+  const out = document.getElementById("streams-out");
+  out.value = ""; // reset
+  const src = new ReadableStream({
+    start(c){ let i=1; const id=setInterval(()=>{ c.enqueue(String(i++)); if(i>10){clearInterval(id); c.close();}},150) }
+  });
+  const upper = new TransformStream({
+    transform(chunk,ctrl){ ctrl.enqueue("Chunk: " + chunk.toUpperCase()+"\\n"); }
+  });
+  const sink = new WritableStream({
+    write(chunk){ out.value += chunk; }
+  });
+  await src.pipeThrough(upper).pipeTo(sink);
+}
+</code></pre>
+        </div>
+        <div class="demo">
+          <div class="btns"><button onclick="runStreamsDemo()">Run Streams demo</button></div>
+          <textarea id="streams-out" rows="7" style="width:100%"></textarea>
+        </div>
+      </div>
+      <p class="note">Real network streams: use <code>(await fetch(url)).body</code> for a <code>ReadableStream</code>.</p>
+    </section>
+
+    <!-- WEBSOCKETS -->
+    <section class="card api" data-cat="Network" data-rank="A" data-title="WebSocket">
+      <h2>WebSocket <span class="rank A">A</span></h2>
+      <p><b>Goal:</b> Bi-directional, low-latency messaging.</p>
+      <details open><summary>Steps</summary>
+        <ol>
+          <li>Connect: <code>const ws = new WebSocket('wss://…')</code></li>
+          <li>Listen to <code>open</code>, <code>message</code>, <code>close</code>, <code>error</code>.</li>
+          <li>Send JSON with <code>ws.send(JSON.stringify(...))</code>.</li>
+          <li>Auto-reconnect with backoff.</li>
+        </ol>
+      </details>
+      <pre><button class="copy">Copy</button><code class="lang-js">
+// Minimal resilient WebSocket client
+function makeWS(url, {onMsg}={}){
+  let ws, tries=0;
+  const connect = () => {
+    ws = new WebSocket(url);
+    ws.onopen = () => { tries=0; console.log("WS: open"); };
+    ws.onmessage = (e) => onMsg?.(e.data);
+    ws.onclose = () => setTimeout(connect, Math.min(1000*2**tries++, 10000));
+    ws.onerror = (e) => console.warn("WS error", e);
+  };
+  connect();
+  return { send:(data)=>ws?.readyState===1 && ws.send(data) };
+}
+</code></pre>
+      <p class="note">Use SSE (EventSource) for server→client only streams; WebSocket for two-way.</p>
+    </section>
+
+    <!-- SERVER-SENT EVENTS -->
+    <section class="card api" data-cat="Network" data-rank="B" data-title="Server-Sent Events (EventSource)">
+      <h2>Server-Sent Events (EventSource) <span class="rank B">B</span></h2>
+      <p><b>Goal:</b> Subscribe to server push with automatic reconnect.</p>
+      <pre><button class="copy">Copy</button><code class="lang-js">
+// SSE client
+const ev = new EventSource("/events");
+ev.onmessage = (e)=>console.log("data:", e.data);
+ev.addEventListener("price", (e)=>console.log("price:", JSON.parse(e.data)));
+ev.onerror = (e)=>console.warn("SSE error", e);
+</code></pre>
+      <p class="note">Great for broadcasts and logs; falls back to HTTP only.</p>
+    </section>
+
+    <!-- STORAGE -->
+    <section class="card api" data-cat="Storage" data-rank="S" data-title="Web Storage (localStorage / sessionStorage)">
+      <h2>Web Storage (localStorage / sessionStorage) <span class="rank S">S</span></h2>
+      <div class="grid two">
+        <div>
+          <details open><summary>Steps</summary>
+            <ol>
+              <li>Stringify objects; catch quota errors.</li>
+              <li>Use <code>storage</code> event to sync across tabs.</li>
+              <li>Prefer <b>IndexedDB</b> for >5MB or structured data.</li>
+            </ol>
+          </details>
+<pre><button class="copy">Copy</button><code class="lang-js">
+// Safe localStorage helpers
+const store = {
+  get(key, dflt=null){ try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : dflt } catch { return dflt }},
+  set(key, val){ localStorage.setItem(key, JSON.stringify(val)) },
+  del(key){ localStorage.removeItem(key) }
+};
+window.addEventListener("storage", (e)=>{ if(e.key==="notes") renderNotes(); });
+</code></pre>
+        </div>
+        <div class="demo">
+          <label>Quick note</label>
+          <textarea id="note" rows="4" style="width:100%"></textarea>
+          <div class="btns">
+            <button onclick="store.set('notes', note.value)">Save</button>
+            <button class="secondary" onclick="note.value=store.get('notes','')">Load</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INDEXEDDB -->
+    <section class="card api" data-cat="Storage" data-rank="A" data-title="IndexedDB">
+      <h2>IndexedDB <span class="rank A">A</span></h2>
+      <p><b>Goal:</b> Store queryable objects offline. Schema via object stores + indexes.</p>
+      <details open><summary>Steps</summary>
+        <ol>
+          <li>Open DB with version + <code>onupgradeneeded</code> to create stores/indexes.</li>
+          <li>Use transactions: <code>db.transaction(store, 'readwrite')</code>.</li>
+          <li>Wrap requests in Promises for <code>await</code> ergonomics.</li>
+        </ol>
+      </details>
+<pre><button class="copy">Copy</button><code class="lang-js">
+// Tiny promised IndexedDB helper
+function idbOpen(name, v, upgrade){
+  return new Promise((resolve, reject)=>{
+    const req = indexedDB.open(name, v);
+    req.onupgradeneeded = (e)=>upgrade?.(req.result, e.oldVersion, e.newVersion);
+    req.onsuccess = ()=>resolve(req.result);
+    req.onerror = ()=>reject(req.error);
+  });
+}
+function idbTx(db, store, mode, fn){
+  return new Promise((resolve, reject)=>{
+    const tx = db.transaction(store, mode); const s = tx.objectStore(store);
+    const req = fn(s); req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error);
+  });
+}
+let db;
+(async ()=>{
+  db = await idbOpen("courses", 1, (db)=>{
+    const s = db.createObjectStore("notes",{keyPath:"id"});
+    s.createIndex("byTitle","title");
+  });
+})();
+async function addNote(title, text){
+  const note = {id:crypto.randomUUID(), title, text, created:Date.now()};
+  return idbTx(db,"notes","readwrite", s => s.add(note));
+}
+</code></pre>
+      <div class="demo">
+        <div class="btns">
+          <input id="idbTitle" placeholder="Title" />
+          <input id="idbText" placeholder="Text" />
+          <button onclick="addNote(idbTitle.value,idbText.value).then(()=>{idbTitle.value='';idbText.value='';alert('Saved to IndexedDB');})">Save</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CACHE API -->
+    <section class="card api" data-cat="Storage" data-rank="A" data-title="Cache API">
+      <h2>Cache API <span class="rank A">A</span></h2>
+      <p><b>Goal:</b> Programmatically cache Request/Response pairs (usually in a Service Worker).</p>
+<pre><button class="copy">Copy</button><code class="lang-js">
+// Cache some assets
+async function warmCache(){
+  const c = await caches.open("v1");
+  await c.addAll(["./", "./favicon.ico"]);
+  console.log("Cache warmed. keys:", await c.keys());
+}
+</code></pre>
+      <p class="note">Match behavior honors <code>Vary</code> headers; use in SW <code>install</code>/<code>fetch</code> events.</p>
+    </section>
+
+    <!-- SERVICE WORKER -->
+    <section class="card api" data-cat="Offline" data-rank="S" data-title="Service Worker">
+      <h2>Service Worker <span class="rank S">S</span></h2>
+      <p><b>Goal:</b> Offline, caching strategies, background sync, push.</p>
+      <details open><summary>Steps</summary>
+        <ol>
+          <li>Serve your site over <b>HTTPS</b> (localhost ok).</li>
+          <li>Register: <code>navigator.serviceWorker.register('/sw.js')</code>.</li>
+          <li>In <code>sw.js</code>, cache on <code>install</code>, intercept <code>fetch</code> to respond from cache/network.</li>
+        </ol>
+      </details>
+<pre><button class="copy">Copy</button><code class="lang-js">
+// main.js
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(()=>console.log("SW registered"));
+}
+
+// sw.js (put at site root)
+self.addEventListener('install', (e)=>{
+  e.waitUntil(caches.open('v1').then(c=>c.addAll(['/','/index.html'])));
+});
+self.addEventListener('fetch', (e)=>{
+  e.respondWith(caches.match(e.request).then(r=> r || fetch(e.request)));
+});
+</code></pre>
+      <p class="note bad">Won’t work from <code>file://</code>. Host this file via a local server (e.g. <code>npx serve</code>).</p>
+    </section>
+
+    <!-- WEB WORKERS -->
+    <section class="card api" data-cat="System" data-rank="A" data-title="Web Workers">
+      <h2>Web Workers <span class="rank A">A</span></h2>
+      <p><b>Goal:</b> Move CPU-heavy work off the main thread.</p>
+      <div class="grid two">
+        <div>
+<pre><button class="copy">Copy</button><code class="lang-js">
+// Create a worker from a Blob URL
+const workerSrc = `
+self.onmessage = (e) => {
+  const n = e.data; let sum = 0;
+  for (let i=0;i<n*5e5;i++) sum += i%97;
+  postMessage({n, sum});
+}`;
+const url = URL.createObjectURL(new Blob([workerSrc],{type:"application/javascript"}));
+const worker = new Worker(url);
+worker.onmessage = (e)=>{ document.getElementById('worker-out').textContent = JSON.stringify(e.data) };
+function runWorker(){ worker.postMessage(200); }
+</code></pre>
+        </div>
+        <div class="demo">
+          <div class="btns"><button onclick="runWorker()">Run heavy calc in worker</button></div>
+          <pre id="worker-out" class="tiny"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLIPBOARD -->
+    <section class="card api" data-cat="UX" data-rank="A" data-title="Clipboard">
+      <h2>Clipboard <span class="rank A">A</span></h2>
+      <p><b>Goal:</b> Copy/paste text and images (secure contexts; user gesture often required).</p>
+      <div class="grid two">
+        <div>
+<pre><button class="copy">Copy</button><code class="lang-js">
+// Write text
+async function copyText(id){
+  const txt = document.getElementById(id).value;
+  await navigator.clipboard.writeText(txt);
+  alert("Copied!");
+}
+// Read text (may need permissions)
+async function pasteText(id){
+  const txt = await navigator.clipboard.readText();
+  document.getElementById(id).value = txt;
+}
+</code></pre>
+        </div>
+        <div class="demo">
+          <textarea id="clip" rows="3" style="width:100%" placeholder="Type something…"></textarea>
+          <div class="btns">
+            <button onclick="copyText('clip')">Copy</button>
+            <button class="secondary" onclick="pasteText('clip')">Paste</button>
+          </div>
+          <p class="tiny">If blocked, check site is HTTPS and you interacted with the page.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOTIFICATIONS -->
+    <section class="card api" data-cat="UX" data-rank="B" data-title="Notifications & Push">
+      <h2>Notifications & Push <span class="rank B">B</span></h2>
+      <p><b>Goal:</b> Request permission and show a notification (push requires SW + server).</p>
+<pre><button class="copy">Copy</button><code class="lang-js">
+// Request permission + show
+async function notify(){
+  const perm = await Notification.requestPermission();
+  if (perm === "granted") new Notification("Hello from your PWA!", { body:"It works ✨" });
+}
+</code></pre>
+      <div class="btns"><button onclick="notify()">Request & Show</button></div>
+      <p class="note">For push, subscribe to <code>PushManager</code> in your SW and send via a push service.</p>
+    </section>
+
+    <!-- MEDIADEVICES -->
+    <section class="card api" data-cat="Media" data-rank="A" data-title="MediaDevices (Camera/Mic)">
+      <h2>MediaDevices (Camera/Mic) <span class="rank A">A</span></h2>
+      <p><b>Goal:</b> Capture camera/microphone with permissions; stop tracks cleanly.</p>
+      <div class="grid two">
+        <div>
+<pre><button class="copy">Copy</button><code class="lang-js">
+let camStream;
+async function startCam(){
+  camStream = await navigator.mediaDevices.getUserMedia({video:true, audio:false});
+  document.getElementById("cam").srcObject = camStream;
+}
+function stopCam(){ camStream?.getTracks().forEach(t=>t.stop()); }
+</code></pre>
+        </div>
+        <div class="demo">
+          <video id="cam" autoplay playsinline style="width:100%; max-height:220px; background:#000"></video>
+          <div class="btns">
+            <button onclick="startCam()">Start camera</button>
+            <button class="secondary" onclick="stopCam()">Stop</button>
+          </div>
+          <p class="tiny">Requires user permission and HTTPS.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN CAPTURE + MEDIARECORDER -->
+    <section class="card api" data-cat="Media" data-rank="B" data-title="Screen Capture + MediaRecorder">
+      <h2>Screen Capture + MediaRecorder <span class="rank B">B</span></h2>
+      <details open><summary>Steps</summary>
+        <ol>
+          <li>Get screen stream with <code>getDisplayMedia()</code>.</li>
+          <li>Record via <code>MediaRecorder</code>; collect <code>dataavailable</code> blobs.</li>
+          <li>Save to a downloadable video URL.</li>
+        </ol>
+      </details>
+<pre><button class="copy">Copy</button><code class="lang-js">
+let rec, recChunks=[];
+async function recordScreen(){
+  const stream = await navigator.mediaDevices.getDisplayMedia({video:true, audio:true});
+  rec = new MediaRecorder(stream);
+  rec.ondataavailable = (e)=> e.data.size && recChunks.push(e.data);
+  rec.onstop = ()=>{
+    const blob = new Blob(recChunks, {type: rec.mimeType || 'video/webm'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'capture.webm'; a.click(); recChunks=[];
+  };
+  rec.start(); setTimeout(()=>rec.stop(), 5000); // 5s demo
+}
+</code></pre>
+      <div class="btns"><button onclick="recordScreen()">Record 5s screen</button></div>
+    </section>
+
+    <!-- WEB AUDIO -->
+    <section class="card api" data-cat="Media" data-rank="A" data-title="Web Audio">
+      <h2>Web Audio <span class="rank A">A</span></h2>
+      <p><b>Goal:</b> Build audio graphs; play an oscillator tone.</p>
+      <div class="grid two">
+        <div>
+<pre><button class="copy">Copy</button><code class="lang-js">
+let actx, osc;
+function playTone(freq=440){
+  actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+  osc?.stop(); osc = actx.createOscillator();
+  const gain = actx.createGain(); gain.gain.value = 0.05;
+  osc.frequency.value = freq; osc.connect(gain).connect(actx.destination);
+  osc.start(); setTimeout(()=>osc.stop(), 1000);
+}
+</code></pre>
+        </div>
+        <div class="demo">
+          <div class="btns">
+            <button onclick="playTone(440)">A4 (440Hz)</button>
+            <button class="secondary" onclick="playTone(523)">C5</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CANVAS 2D -->
+    <section class="card api" data-cat="Graphics" data-rank="A" data-title="Canvas 2D">
+      <h2>Canvas 2D <span class="rank A">A</span></h2>
+      <div class="grid two">
+        <div>
+<pre><button class="copy">Copy</button><code class="lang-js">
+// Draw grid + animating dot
+function drawCanvas(){
+  const c = document.getElementById("c2d");
+  const dpr = window.devicePixelRatio || 1; const w=400, h=220;
+  c.width=w*dpr; c.height=h*dpr; c.style.width=w+"px"; c.style.height=h+"px";
+  const ctx = c.getContext("2d"); ctx.scale(dpr,dpr);
+  ctx.fillStyle="#0a0e26"; ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle="#2a315c";
+  for(let x=0;x<w;x+=20){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+  for(let y=0;y<h;y+=20){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+  let t=0; (function anim(){
+    ctx.fillStyle="rgba(11,16,32,.25)"; ctx.fillRect(0,0,w,h);
+    const x = 200 + Math.cos(t)*100, y = 110 + Math.sin(t*1.2)*60;
+    ctx.fillStyle="#8df0c8"; ctx.beginPath(); ctx.arc(x,y,8,0,Math.PI*2); ctx.fill();
+    t+=0.06; requestAnimationFrame(anim);
+  })();
+}
+</code></pre>
+        </div>
+        <div class="demo">
+          <canvas id="c2d"></canvas>
+          <div class="btns"><button onclick="drawCanvas()">Draw</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WEB ANIMATIONS -->
+    <section class="card api" data-cat="Graphics" data-rank="A" data-title="Web Animations">
+      <h2>Web Animations API <span class="rank A">A</span></h2>
+      <div class="grid two">
+        <div>
+<pre><button class="copy">Copy</button><code class="lang-js">
+function pulse(){
+  const box = document.getElementById("waapi");
+  box.animate([
+    { transform:"scale(1)",   offset:0},
+    { transform:"scale(1.08)", offset:.4},
+    { transform:"scale(1)",   offset:1}
+  ], { duration:600, easing:"cubic-bezier(.2,.8,.2,1)"});
+}
+</code></pre>
+        </div>
+        <div class="demo">
+          <div id="waapi" style="width:100%;height:80px;border-radius:14px;background:#1c2758;display:grid;place-items:center">Animate me</div>
+          <div class="btns"><button onclick="pulse()">Pulse</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PERFORMANCE -->
+    <section class="card api" data-cat="System" data-rank="A" data-title="Performance">
+      <h2>Performance <span class="rank A">A</span></h2>
+      <p><b>Goal:</b> Measure and mark. Use <code>performance.now()</code>, <code>mark</code>/<code>measure</code>.</p>
+<pre><button class="copy">Copy</button><code class="lang-js">
+performance.mark("start");
+// ...work
+performance.mark("end");
+performance.measure("work","start","end");
+console.table(performance.getEntriesByType("measure").map(m=>({name:m.name,duration:m.duration.toFixed(2)+"ms"})));
+</code></pre>
+      <p class="note">Also inspect <code>PerformanceObserver</code> for paint/LCP/CLS in production.</p>
+    </section>
+
+    <!-- PERMISSIONS -->
+    <section class="card api" data-cat="Security" data-rank="B" data-title="Permissions">
+      <h2>Permissions <span class="rank B">B</span></h2>
+      <p><b>Goal:</b> Check if a feature is granted/prompt/denied before calling it.</p>
+<pre><button class="copy">Copy</button><code class="lang-js">
+async function canGeo(){
+  if (!('permissions' in navigator)) return "unknown";
+  const res = await navigator.permissions.query({name:"geolocation"});
+  return res.state; // "granted" | "prompt" | "denied"
+}
+</code></pre>
+    </section>
+
+    <!-- GEOLOCATION -->
+    <section class="card api" data-cat="Device" data-rank="B" data-title="Geolocation">
+      <h2>Geolocation <span class="rank B">B</span></h2>
+<pre><button class="copy">Copy</button><code class="lang-js">
+function locate(){
+  if (!navigator.geolocation) return alert("Not supported");
+  navigator.geolocation.getCurrentPosition(
+    (pos)=>alert(`Lat ${pos.coords.latitude.toFixed(4)}, Lng ${pos.coords.longitude.toFixed(4)}`),
+    (err)=>alert("Error: "+err.message),
+    {enableHighAccuracy:true, timeout:8000}
+  );
+}
+</code></pre>
+      <div class="btns"><button onclick="locate()">Get location</button></div>
+    </section>
+
+    <!-- OBSERVER APIS -->
+    <section class="card api" data-cat="DOM" data-rank="A" data-title="Observer APIs">
+      <h2>Observer APIs (Intersection/Resize/Mutation) <span class="rank A">A</span></h2>
+<pre><button class="copy">Copy</button><code class="lang-js">
+// Reveal on scroll
+const io = new IntersectionObserver((entries)=>{
+  for(const e of entries) if (e.isIntersecting) e.target.classList.remove("hidden");
+},{threshold:.2});
+document.querySelectorAll(".reveal").forEach(el=>{ el.classList.add("hidden"); io.observe(el); });
+
+// Watch node size
+const ro = new ResizeObserver((ents)=>{ ents.forEach(e=> e.target.dataset.size = `${e.contentRect.width.toFixed(0)}×${e.contentRect.height.toFixed(0)}`) });
+ro.observe(document.getElementById("waapi"));
+</code></pre>
+      <div class="grid three">
+        <div class="reveal demo" style="height:80px">Revealed 1</div>
+        <div class="reveal demo" style="height:80px">Revealed 2</div>
+        <div class="reveal demo" style="height:80px">Revealed 3</div>
+      </div>
+    </section>
+
+    <!-- CREDENTIALS + WEBAUTHN -->
+    <section class="card api" data-cat="Security" data-rank="A" data-title="Credentials & WebAuthn">
+      <h2>Credentials & WebAuthn <span class="rank A">A</span></h2>
+      <p class="note">Credential Management for passwords/OTP; WebAuthn for passkeys (public-key).</p>
+<pre><button class="copy">Copy</button><code class="lang-js">
+// Check availability
+if ('credentials' in navigator) {
+  console.log("Credential Management available");
+}
+// (Server integration required for real WebAuthn flows.)
+</code></pre>
+      <p class="note">Use passkeys where possible; fall back to passwords. Requires HTTPS.</p>
+    </section>
+
+    <!-- INTL -->
+    <section class="card api" data-cat="Language" data-rank="A" data-title="Intl (i18n)">
+      <h2>Intl (Internationalization) <span class="rank A">A</span></h2>
+<pre><button class="copy">Copy</button><code class="lang-js">
+const fmtN = new Intl.NumberFormat('en-NG',{style:'currency', currency:'NGN'});
+const fmtD = new Intl.DateTimeFormat('en-GB',{dateStyle:'long', timeStyle:'short'});
+console.log(fmtN.format(1234567.89), fmtD.format(new Date()));
+</code></pre>
+    </section>
+
+    <!-- NICE-TO-KNOW CARDS (short form) -->
+    <section class="card">
+      <h2>More APIs (quick start cards)</h2>
+      <div class="grid two">
+        <div class="api" data-cat="Graphics" data-rank="B" data-title="WebGL">
+          <h3>WebGL <span class="rank B">B</span></h3>
+          <p>Low-level GPU graphics via shaders. Prefer Three.js for scenes; use WebGL directly for fine-grained control.</p>
+        </div>
+        <div class="api" data-cat="XR" data-rank="C" data-title="WebXR">
+          <h3>WebXR <span class="rank C">C</span></h3>
+          <p>VR/AR sessions; device + privacy constraints apply. Works best on capable hardware.</p>
+        </div>
+        <div class="api" data-cat="Device" data-rank="C" data-title="Device Orientation">
+          <h3>Device Orientation/Motion <span class="rank C">C</span></h3>
+          <p>Great for mobile tilt-controls; permissions differ across platforms.</p>
+        </div>
+        <div class="api" data-cat="Device" data-rank="C" data-title="Gamepad">
+          <h3>Gamepad <span class="rank C">C</span></h3>
+          <p>Poll controller state for games/tools; remember to handle connection changes.</p>
+        </div>
+        <div class="api" data-cat="UX" data-rank="C" data-title="EyeDropper">
+          <h3>EyeDropper <span class="rank C">C</span></h3>
+          <p>Pick any on-screen pixel color (experimental; limited support).</p>
+        </div>
+        <div class="api" data-cat="UX" data-rank="B" data-title="Web Share">
+          <h3>Web Share <span class="rank B">B</span></h3>
+          <p>Trigger native share sheet with <code>navigator.share()</code> on mobile/desktop where supported.</p>
+        </div>
+        <div class="api" data-cat="Hardware" data-rank="C" data-title="Bluetooth/USB/NFC">
+          <h3>Web Bluetooth / USB / NFC <span class="rank C">C</span></h3>
+          <p>Hardware access for specialized apps; HTTPS + user gestures; limited support.</p>
+        </div>
+        <div class="api" data-cat="Payments" data-rank="B" data-title="Payment Request">
+          <h3>Payment Request <span class="rank B">B</span></h3>
+          <p>Streamlines checkout; availability varies by browser + payment handlers.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="footer">
+      <p>Tips: build a project per module (e.g., offline notes app → Storage + SW + Cache; audio toy → MediaDevices + Web Audio + Canvas spectrum).</p>
+      <p class="tiny">This course uses modern, broadly supported API shapes. Always confirm browser support before shipping.</p>
+    </section>
+  </main>
+</div>
+
+<script>
+  // ---------- Sidebar + Filters ----------
+  const cats = ["DOM","Network","Storage","Offline","System","UX","Media","Graphics","Security","Device","Language","XR","Hardware","Payments"];
+  const catChips = document.getElementById("catChips");
+  cats.forEach(c=>{
+    const el = document.createElement("div");
+    el.className = "chip"; el.textContent = c; el.dataset.cat = c;
+    el.onclick = ()=>{ el.classList.toggle("active"); applyFilters(); };
+    catChips.append(el);
+  });
+
+  const q = document.getElementById("q");
+  const rankFilter = document.getElementById("rankFilter");
+  const content = document.getElementById("content");
+  const modules = [...document.querySelectorAll(".api")].map(el=>({
+    el, title: el.dataset.title.toLowerCase(),
+    cat: el.dataset.cat, rank: el.dataset.rank
+  }));
+  function applyFilters(){
+    const text = q.value.trim().toLowerCase();
+    const rank = rankFilter.value;
+    const activeCats = new Set([...document.querySelectorAll(".chip.active")].map(x=>x.dataset.cat));
+    for (const m of modules){
+      const matchText = !text || m.title.includes(text) || m.el.textContent.toLowerCase().includes(text);
+      const matchRank = !rank || m.rank === rank;
+      const matchCat = activeCats.size===0 || activeCats.has(m.cat);
+      m.el.style.display = (matchText && matchRank && matchCat) ? "" : "none";
+    }
+  }
+  q.addEventListener("input", applyFilters);
+  rankFilter.addEventListener("change", applyFilters);
+
+  // ---------- Copy buttons ----------
+  document.querySelectorAll("pre .copy").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const code = btn.parentElement.querySelector("code").innerText;
+      try { await navigator.clipboard.writeText(code); btn.textContent = "Copied!"; }
+      catch { // fallback
+        const ta = document.createElement("textarea"); ta.value = code; document.body.append(ta);
+        ta.select(); document.execCommand("copy"); ta.remove(); btn.textContent = "Copied!"; 
+      }
+      setTimeout(()=>btn.textContent="Copy", 1200);
+    });
+  });
+
+  // ---------- Sidebar toggle (mobile) ----------
+  const toggleBtn = document.getElementById("toggleSidebar");
+  const sidebar = document.getElementById("sidebar");
+  let open = true;
+  function setSidebar(openNow){
+    open = openNow;
+    sidebar.style.display = open ? "" : "none";
+    toggleBtn.setAttribute("aria-expanded", String(open));
+  }
+  toggleBtn.addEventListener("click", ()=> setSidebar(!open));
+  if (window.matchMedia("(max-width: 960px)").matches) setSidebar(false);
+
+  // Initialize some demos silently
+  try { drawCanvas?.(); } catch {}
+</script>
+</body>
+</html>

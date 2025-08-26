@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS API Mastery - Home</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <header>
+    <h1>Mastering JavaScript APIs</h1>
+    <p>Offline Coursebook</p>
+  </header>
+
+  <main>
+    <h2>Select a Tier</h2>
+    <div class="tier-grid">
+      <a href="s-tier.html" class="tier-card s">S Tier</a>
+      <a href="a-tier.html" class="tier-card a">A Tier</a>
+      <a href="b-tier.html" class="tier-card b">B Tier</a>
+      <a href="c-tier.html" class="tier-card c">C Tier</a>
+      <a href="d-tier.html" class="tier-card d">D Tier</a>
+      <a href="f-tier.html" class="tier-card f">F Tier</a>
+    </div>
+  </main>
+
+  <footer>
+    <p>Made for Offline Learning | 2025</p>
+  </footer>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(() => console.log("Service Worker registered"))
+        .catch(err => console.log("SW registration failed:", err));
+    }
+  </script>
+</body>
+</html>

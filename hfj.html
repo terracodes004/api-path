@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mastering Vanilla JavaScript APIs — S–F Ranked Coursebook</title>
+<style>
+  :root{
+    --bg:#0f172a;          /* slate-900 */
+    --panel:#111827;       /* gray-900 */
+    --card:#0b1220;        /* dark navy */
+    --text:#e5e7eb;        /* gray-200 */
+    --muted:#9ca3af;       /* gray-400 */
+    --accent:#22d3ee;      /* cyan-400 */
+    --accent-2:#a78bfa;    /* violet-400 */
+    --ring:#34d399;        /* emerald-400 */
+    --code-bg:#0b1220;
+    --border:#1f2937;
+    --s:#10b981;           /* S tier: emerald */
+    --a:#3b82f6;           /* A tier: blue   */
+    --b:#f59e0b;           /* B tier: amber  */
+    --c:#f97316;           /* C tier: orange */
+    --d:#ef4444;           /* D tier: red    */
+    --f:#6b7280;           /* F tier: gray   */
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:linear-gradient(180deg, var(--bg), #090d17 45%, #070b14);
+    color:var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    line-height:1.6;
+  }
+  .layout{
+    display:grid;
+    grid-template-columns:300px 1fr;
+    gap:0;
+    min-height:100vh;
+  }
+  nav{
+    position:sticky; top:0; height:100vh; overflow:auto;
+    background:rgba(17,24,39,0.85);
+    border-right:1px solid var(--border);
+    padding:1rem;
+    backdrop-filter: blur(10px);
+  }
+  nav h2{font-size:1rem; color:var(--muted); margin:0 0 .5rem}
+  nav a{
+    display:block; color:var(--text); text-decoration:none; padding:.4rem .5rem;
+    border-radius:.5rem; border:1px solid transparent;
+  }
+  nav a:hover{ background:#0e1628; border-color:#122039; }
+  .search{
+    display:flex; gap:.5rem; margin-bottom:.75rem;
+  }
+  .search input{
+    flex:1; padding:.6rem .75rem; border-radius:.5rem; border:1px solid var(--border);
+    background:#0b1220; color:var(--text);
+  }
+  .container{ padding:2rem; max-width:1200px; }
+  header h1{font-size:2rem; margin:.2rem 0}
+  header p{color:var(--muted)}
+  .badge{ display:inline-block; font-size:.75rem; letter-spacing:.04em; padding:.15rem .5rem; border-radius:.5rem; border:1px solid var(--border); margin-left:.4rem}
+  .tier{font-weight:700}
+  .tier.s{ color:#022c22; background:linear-gradient(180deg,#34d399,#10b981); border:none; }
+  .tier.a{ color:#0b1a35; background:linear-gradient(180deg,#60a5fa,#3b82f6); border:none; }
+  .tier.b{ color:#3a2002; background:linear-gradient(180deg,#fbbf24,#f59e0b); border:none; }
+  .tier.c{ color:#3a0f02; background:linear-gradient(180deg,#fb923c,#f97316); border:none; }
+  .tier.d{ color:#3a0202; background:linear-gradient(180deg,#f87171,#ef4444); border:none; }
+  .tier.f{ color:#111827; background:linear-gradient(180deg,#9ca3af,#6b7280); border:none; }
+  section{ margin:2rem 0; padding:1.25rem; border:1px solid var(--border); border-radius:1rem; background: radial-gradient(1200px 400px at 10% -10%,rgba(34,211,238,0.08),transparent 40%), radial-gradient(1000px 500px at 120% 120%, rgba(167,139,250,0.08), transparent 40%), #0b1220; }
+  h2{ margin-top:0; font-size:1.5rem }
+  h3{ margin-bottom:.25rem }
+  details{ border:1px solid var(--border); border-radius:.75rem; margin:.75rem 0; padding:.5rem .75rem; background:#0a1220; }
+  details[open]{ box-shadow:0 0 0 1px #1c2b49 inset; }
+  summary{ cursor:pointer; font-weight:600; }
+  code, pre{ font-family:var(--mono); }
+  pre{
+    background:var(--code-bg);
+    border:1px solid var(--border);
+    border-radius:.75rem;
+    padding:1rem;
+    overflow:auto;
+  }
+  .project{
+    border-left:3px solid var(--accent);
+    padding:.5rem .75rem; margin:.75rem 0; background:#0b1424;
+  }
+  .grid{ display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .pill{ display:inline-flex; align-items:center; gap:.4rem; padding:.2rem .55rem; border-radius:999px; border:1px solid var(--border); color:var(--muted); font-size:.75rem; }
+  .toc small{color:var(--muted)}
+  .foot{color:var(--muted); margin-top:2rem; font-size:.9rem}
+  @media (max-width: 900px){
+    .layout{ grid-template-columns:1fr; }
+    nav{ position:relative; height:auto }
+  }
+  @media print{
+    nav{display:none}
+    body{background:#fff; color:#111}
+    section{break-inside:avoid}
+    .tier{filter:grayscale(1)}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav>
+    <div class="search">
+      <input id="filter" placeholder="Search topics or APIs…">
+    </div>
+    <h2>Contents</h2>
+    <div id="toc" class="toc"></div>
+    <p class="foot">Tip: Click a section to expand details. Use your browser’s <b>Print</b> → <b>Save as PDF</b> to export.</p>
+  </nav>
+
+  <main class="container" id="content">
+    <header>
+      <h1>Mastering Vanilla JavaScript APIs <span class="badge">All-in-One Coursebook</span></h1>
+      <p>Super-detailed guide with explanations, code, and projects. Each API is labeled with an <b>importance tier</b> from <span class="tier s badge">S</span> to <span class="tier f badge">F</span>.</p>
+    </header>
+
+    <!-- Stage 1 -->
+    <section id="stage-1">
+      <h2>Stage 1 — Foundations <span class="tier s badge">S</span></h2>
+      <p>Essential JavaScript and DOM skills used in every real project.</p>
+      <div class="grid">
+        <div>
+          <h3>DOM API <span class="tier s badge">S</span></h3>
+          <details open>
+            <summary>Overview & Syntax</summary>
+            <p>The DOM lets you query, create, and update HTML dynamically.</p>
+            <pre><code>// Query
+const title = document.querySelector('h1');
+// Update
+title.textContent = 'Hello DOM';
+// Create & append
+const btn = document.createElement('button');
+btn.textContent = 'Click me';
+document.body.appendChild(btn);
+</code></pre>
+          </details>
+          <div class="project"><b>Mini Project:</b> To-Do List with add/delete/edit, persisted in LocalStorage.</div>
+        </div>
+        <div>
+          <h3>Events API <span class="tier s badge">S</span></h3>
+          <details>
+            <summary>Listening & Delegation</summary>
+            <pre><code>document.addEventListener('click', e =&gt; {
+  if (e.target.matches('[data-inc]')) count++;
+});</code></pre>
+          </details>
+          <div class="project"><b>Mini Project:</b> Counter with keyboard shortcuts and hold-to-repeat.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 2 -->
+    <section id="stage-2">
+      <h2>Stage 2 — Storage & File APIs</h2>
+      <div class="grid">
+        <div>
+          <h3>LocalStorage / SessionStorage <span class="tier s badge">S</span></h3>
+          <details open><summary>Usage</summary>
+            <pre><code>// Save / read / remove
+localStorage.setItem('theme','dark');
+const theme = localStorage.getItem('theme');
+localStorage.removeItem('theme');</code></pre>
+          </details>
+          <div class="project"><b>Project:</b> Notes App with tags & search.</div>
+        </div>
+        <div>
+          <h3>IndexedDB <span class="tier a badge">A</span></h3>
+          <details><summary>Transactions & Stores</summary>
+            <pre><code>const req = indexedDB.open('MyDB', 1);
+req.onupgradeneeded = e =&gt; e.target.result
+  .createObjectStore('notes',{keyPath:'id'});
+req.onsuccess = e =&gt; {
+  const db = e.target.result;
+  const tx = db.transaction('notes','readwrite');
+  tx.objectStore('notes').put({id:1, text:'Hello DB'});
+};</code></pre>
+          </details>
+          <div class="project"><b>Project:</b> Offline gallery (images in IndexedDB + Cache API).</div>
+        </div>
+        <div>
+          <h3>Cache API <span class="tier a badge">A</span></h3>
+          <details><summary>Precache & Match</summary>
+            <pre><code>const cache = await caches.open('v1');
+await cache.addAll(['/', '/index.html']);
+const res = await cache.match('/index.html');</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>File System Access <span class="tier c badge">C</span></h3>
+          <details><summary>Save a file</summary>
+            <pre><code>const handle = await window.showSaveFilePicker();
+const w = await handle.createWritable();
+await w.write('Hello!'); await w.close();</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>Clipboard API <span class="tier c badge">C</span></h3>
+          <details><summary>Copy / Paste</summary>
+            <pre><code>await navigator.clipboard.writeText('Copied!');
+const txt = await navigator.clipboard.readText();</code></pre>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 3 -->
+    <section id="stage-3">
+      <h2>Stage 3 — Networking & Real-Time</h2>
+      <div class="grid">
+        <div>
+          <h3>Fetch API <span class="tier s badge">S</span></h3>
+          <details open><summary>Basics & Streaming</summary>
+            <pre><code>// Basic JSON
+const data = await fetch('/api').then(r =&gt; r.json());
+
+// Streaming text
+const res = await fetch('/big.txt');
+const reader = res.body.getReader();
+const {value, done} = await reader.read();
+console.log(new TextDecoder().decode(value));</code></pre>
+          </details>
+          <div class="project"><b>Project:</b> Weather app with caching & retry.</div>
+        </div>
+        <div>
+          <h3>WebSockets <span class="tier s badge">S</span></h3>
+          <details><summary>Realtime messages</summary>
+            <pre><code>const ws = new WebSocket('wss://echo.websocket.org');
+ws.onopen = () =&gt; ws.send('hello');
+ws.onmessage = e =&gt; console.log(e.data);</code></pre>
+          </details>
+          <div class="project"><b>Project:</b> Chat app with typing indicators.</div>
+        </div>
+        <div>
+          <h3>Server-Sent Events <span class="tier b badge">B</span></h3>
+          <details><summary>One-way stream</summary>
+            <pre><code>const es = new EventSource('/events');
+es.onmessage = e =&gt; console.log(e.data);</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>WebRTC <span class="tier a badge">A</span></h3>
+          <details><summary>Peer media</summary>
+            <pre><code>const pc = new RTCPeerConnection();
+const stream = await navigator.mediaDevices.getUserMedia({video:true, audio:true});
+stream.getTracks().forEach(t =&gt; pc.addTrack(t, stream));</code></pre>
+          </details>
+          <div class="project"><b>Project:</b> P2P file transfer + video preview.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 4 -->
+    <section id="stage-4">
+      <h2>Stage 4 — Media APIs</h2>
+      <div class="grid">
+        <div>
+          <h3>MediaDevices (Camera/Mic) <span class="tier a badge">A</span></h3>
+          <details open><summary>getUserMedia</summary>
+            <pre><code>const stream = await navigator.mediaDevices.getUserMedia({video:true, audio:true});
+document.querySelector('video').srcObject = stream;</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>Screen Capture <span class="tier a badge">A</span></h3>
+          <details><summary>getDisplayMedia</summary>
+            <pre><code>const s = await navigator.mediaDevices.getDisplayMedia({video:true});
+document.querySelector('video').srcObject = s;</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>MediaRecorder <span class="tier a badge">A</span></h3>
+          <details><summary>Record audio/video</summary>
+            <pre><code>const chunks=[];
+const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+const rec = new MediaRecorder(stream);
+rec.ondataavailable = e =&gt; chunks.push(e.data);
+rec.onstop = () =&gt; URL.createObjectURL(new Blob(chunks,{type:'audio/webm'}));
+rec.start(); setTimeout(() =&gt; rec.stop(), 3000);</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>Web Audio API <span class="tier a badge">A</span></h3>
+          <details><summary>Oscillator & Analyser</summary>
+            <pre><code>const ctx = new AudioContext();
+const osc = ctx.createOscillator();
+osc.frequency.value = 440; osc.connect(ctx.destination);
+osc.start(); osc.stop(ctx.currentTime + 1);</code></pre>
+          </details>
+        </div>
+      </div>
+      <div class="project"><b>Project:</b> Music visualizer (AnalyserNode + Canvas).</div>
+    </section>
+
+    <!-- Stage 5 -->
+    <section id="stage-5">
+      <h2>Stage 5 — Graphics & Animation</h2>
+      <div class="grid">
+        <div>
+          <h3>Canvas 2D <span class="tier s badge">S</span></h3>
+          <details open><summary>Draw basics</summary>
+            <pre><code>const ctx = document.querySelector('canvas').getContext('2d');
+ctx.fillStyle = 'royalblue'; ctx.fillRect(20,20,120,60);
+ctx.beginPath(); ctx.arc(180,60,30,0,Math.PI*2); ctx.fill();</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>WebGL <span class="tier s badge">S</span></h3>
+          <details><summary>Context & clear</summary>
+            <pre><code>const gl = document.querySelector('canvas').getContext('webgl');
+gl.clearColor(0.1,0.1,0.2,1); gl.clear(gl.COLOR_BUFFER_BIT);</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>WebGPU <span class="tier a badge">A</span></h3>
+          <details><summary>Adapter & Device</summary>
+            <pre><code>if ('gpu' in navigator){
+  const adapter = await navigator.gpu.requestAdapter();
+  const device = await adapter.requestDevice();
+  console.log(device);
+}</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>Web Animations API <span class="tier a badge">A</span></h3>
+          <details><summary>Keyframes</summary>
+            <pre><code>document.querySelector('#box').animate(
+  [{transform:'translateX(0)'},{transform:'translateX(200px)'}],
+  {duration:1000, iterations:Infinity}
+);</code></pre>
+          </details>
+        </div>
+      </div>
+      <div class="project"><b>Project:</b> Particle system with Canvas requestAnimationFrame.</div>
+    </section>
+
+    <!-- Stage 6 -->
+    <section id="stage-6">
+      <h2>Stage 6 — Performance & Background</h2>
+      <div class="grid">
+        <div>
+          <h3>Web Workers <span class="tier s badge">S</span></h3>
+          <details open><summary>Main ↔ Worker</summary>
+            <pre><code>// worker.js
+self.onmessage = e =&gt; postMessage(e.data * 2);
+
+// main.js
+const w = new Worker('worker.js');
+w.postMessage(21); w.onmessage = e =&gt; console.log(e.data);</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>Service Workers <span class="tier s badge">S</span></h3>
+          <details><summary>Offline cache</summary>
+            <pre><code>// register
+navigator.serviceWorker.register('sw.js');
+
+// sw.js
+self.addEventListener('install', e =&gt; {
+  e.waitUntil(caches.open('v1').then(c =&gt; c.addAll(['/','/index.html'])));
+});
+self.addEventListener('fetch', e =&gt; {
+  e.respondWith(caches.match(e.request).then(r =&gt; r || fetch(e.request)));
+});</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>Background Sync <span class="tier b badge">B</span></h3>
+          <details><summary>Retry later</summary>
+            <pre><code>navigator.serviceWorker.ready.then(reg =&gt; reg.sync.register('send-queue'));</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>Performance API <span class="tier b badge">B</span></h3>
+          <details><summary>Measure</summary>
+            <pre><code>performance.mark('start'); /* work */ performance.mark('end');
+performance.measure('task','start','end');</code></pre>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 7 -->
+    <section id="stage-7">
+      <h2>Stage 7 — Device & Hardware</h2>
+      <div class="grid">
+        <div>
+          <h3>Geolocation <span class="tier b badge">B</span></h3>
+          <details open><summary>Get position</summary>
+            <pre><code>navigator.geolocation.getCurrentPosition(pos =&gt; {
+  console.log(pos.coords.latitude, pos.coords.longitude);
+});</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>DeviceOrientation / Motion <span class="tier b badge">B</span></h3>
+          <details><summary>Angles</summary>
+            <pre><code>addEventListener('deviceorientation', e =&gt; console.log(e.alpha, e.beta, e.gamma));</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>Gamepad <span class="tier b badge">B</span></h3>
+          <details><summary>Connect</summary>
+            <pre><code>addEventListener('gamepadconnected', e =&gt; console.log(e.gamepad.id));</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>Bluetooth / USB / NFC <span class="tier a badge">A</span></h3>
+          <details><summary>Request device</summary>
+            <pre><code>const d = await navigator.bluetooth.requestDevice({acceptAllDevices:true});
+console.log(d.name);</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>Battery Status <span class="tier d badge">D</span></h3>
+          <details><summary>Level</summary>
+            <pre><code>navigator.getBattery?.().then(b =&gt; console.log(b.level));</code></pre>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 8 -->
+    <section id="stage-8">
+      <h2>Stage 8 — Security & Permissions</h2>
+      <div class="grid">
+        <div>
+          <h3>Permissions API <span class="tier a badge">A</span></h3>
+          <details open><summary>Query</summary>
+            <pre><code>const st = await navigator.permissions.query({name:'geolocation'});
+console.log(st.state);</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>Credential Management <span class="tier a badge">A</span></h3>
+          <details><summary>Get password</summary>
+            <pre><code>const cred = await navigator.credentials.get({password:true});</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>WebAuthn <span class="tier s badge">S</span></h3>
+          <details><summary>Create credential</summary>
+            <pre><code>const credential = await navigator.credentials.create({ publicKey:{
+  challenge:new Uint8Array(32),
+  rp:{name:'My App'},
+  user:{id:new Uint8Array(16), name:'user@example.com', displayName:'User'},
+  pubKeyCredParams:[{type:'public-key', alg:-7}]
+}});</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>Payment Request <span class="tier a badge">A</span></h3>
+          <details><summary>Show payment</summary>
+            <pre><code>const req = new PaymentRequest(
+  [{supportedMethods:'basic-card'}],
+  {total:{label:'Total', amount:{currency:'USD', value:'10.00'}}}
+);
+const resp = await req.show();</code></pre>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 9 -->
+    <section id="stage-9">
+      <h2>Stage 9 — Advanced & Experimental</h2>
+      <div class="grid">
+        <div>
+          <h3>Intl (i18n) <span class="tier a badge">A</span></h3>
+          <details open><summary>Format</summary>
+            <pre><code>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(1234.5);</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>Resize / Mutation / Intersection Observers <span class="tier a badge">A</span></h3>
+          <details><summary>Intersection</summary>
+            <pre><code>const io = new IntersectionObserver(es =&gt; es.forEach(e =&gt; {
+  if (e.isIntersecting) console.log('visible', e.target);
+}));
+io.observe(document.querySelector('#target'));</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>EyeDropper <span class="tier c badge">C</span></h3>
+          <details><summary>Pick color</summary>
+            <pre><code>const {sRGBHex} = await (new EyeDropper()).open();</code></pre>
+          </details>
+        </div>
+        <div>
+          <h3>WebXR <span class="tier a badge">A</span></h3>
+          <details><summary>Start session</summary>
+            <pre><code>const session = await navigator.xr?.requestSession('immersive-vr');</code></pre>
+          </details>
+        </div>
+      </div>
+      <div class="project"><b>Projects:</b> Lazy image loader, infinite scroll, AR demo scene.</div>
+    </section>
+
+    <!-- Master Projects -->
+    <section id="stage-10">
+      <h2>Stage 10 — Master Projects</h2>
+      <details open>
+        <summary>Project Blueprints</summary>
+        <ul>
+          <li><b>Offline Media App</b> — Service Worker + IndexedDB + Cache + Web Audio.</li>
+          <li><b>Multiplayer WebGL Game</b> — WebSockets + WebGL + Workers.</li>
+          <li><b>Secure Video Chat</b> — WebRTC + WebAuthn + Permissions.</li>
+          <li><b>AR Face Detection</b> — WebXR + MediaDevices (+ optional Shape Detection).</li>
+        </ul>
+      </details>
+    </section>
+
+    <p class="foot">© Generated guide. Best viewed on desktop. Use <b>Ctrl/⌘ + F</b> to search, or the filter in the sidebar.</p>
+  </main>
+</div>
+
+<script>
+// Build TOC and filter
+const content = document.getElementById('content');
+const toc = document.getElementById('toc');
+const sections = [...content.querySelectorAll('section')];
+
+sections.forEach(sec => {
+  const id = sec.id || sec.querySelector('h2')?.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-');
+  if (!sec.id) sec.id = id;
+  const a = document.createElement('a');
+  a.href = '#' + sec.id;
+  a.textContent = sec.querySelector('h2')?.textContent || 'Section';
+  toc.appendChild(a);
+});
+
+const filterInput = document.getElementById('filter');
+filterInput.addEventListener('input', () => {
+  const q = filterInput.value.toLowerCase();
+  sections.forEach(sec => {
+    sec.style.display = sec.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+</script>
+</body>
+</html>
+```0

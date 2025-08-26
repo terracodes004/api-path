@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F Tier APIs - JavaScript API Mastery</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f9f9fb; color: #222; display: flex; min-height: 100vh; }
+
+    aside {
+      width: 260px; background: #111; color: #fff; padding: 20px;
+      flex-shrink: 0; overflow-y: auto;
+      position: sticky; top: 0; height: 100vh;
+    }
+    aside h2 { margin-bottom: 15px; font-size: 1.3rem; }
+    aside ul { list-style: none; }
+    aside li { margin-bottom: 10px; }
+    aside a {
+      color: #bbb; text-decoration: none; display: block; padding: 8px 10px; border-radius: 6px;
+    }
+    aside a:hover, aside a.active { background: #e53935; color: #fff; }
+
+    main {
+      flex: 1; padding: 20px; overflow-y: auto;
+    }
+    main h1 { font-size: 2rem; margin-bottom: 10px; }
+    main h2 { margin-top: 30px; font-size: 1.5rem; color: #e53935; }
+    main h3 { margin-top: 20px; font-size: 1.2rem; color: #444; }
+    main p { margin: 10px 0; line-height: 1.6; }
+    pre {
+      background: #272822; color: #f8f8f2; padding: 15px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.9rem;
+    }
+
+    .warning {
+      background: #fff3f3;
+      border-left: 5px solid #e53935;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin: 15px 0;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      aside { width: 100%; height: auto; position: relative; }
+    }
+  </style>
+</head>
+<body>
+  <aside>
+    <h2>F Tier APIs</h2>
+    <ul>
+      <li><a href="#appcache" class="active">AppCache</a></li>
+      <li><a href="#websql">WebSQL</a></li>
+      <li><a href="#battery">Battery Status API</a></li>
+      <li><a href="#gamepad">Old Gamepad Extensions</a></li>
+      <li><a href="index.html">⬅ Back to Home</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>☠️ F Tier APIs</h1>
+    <p>These APIs are deprecated, obsolete, or widely considered failures.  
+       You should avoid them in new projects, but it’s good to recognize them when you see old code.</p>
+
+    <!-- AppCache -->
+    <section id="appcache">
+      <h2>Application Cache (AppCache)</h2>
+      <p>Used to make web apps work offline. Replaced by <strong>Service Workers</strong>.</p>
+
+      <h3>How it looked:</h3>
+      <pre><code>&lt;html manifest="app.appcache"&gt;
+&lt;!-- The manifest file listed offline resources --&gt;</code></pre>
+
+      <div class="warning">⚠️ Deprecated because it was buggy, insecure, and had poor design.  
+      ✅ Use <strong>Service Workers + Cache API</strong> instead.</div>
+    </section>
+
+    <!-- WebSQL -->
+    <section id="websql">
+      <h2>WebSQL Database</h2>
+      <p>A browser-based SQL database API. Replaced by <strong>IndexedDB</strong>.</p>
+
+      <h3>How it looked:</h3>
+      <pre><code>const db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
+db.transaction(tx =&gt; {
+  tx.executeSql("CREATE TABLE IF NOT EXISTS users (id, name)");
+});</code></pre>
+
+      <div class="warning">⚠️ Deprecated due to lack of standardization.  
+      ✅ Use <strong>IndexedDB</strong> or <strong>localStorage</strong> instead.</div>
+    </section>
+
+    <!-- Battery API -->
+    <section id="battery">
+      <h2>Battery Status API</h2>
+      <p>Exposed battery charge and charging status. Removed for <strong>privacy reasons</strong>.</p>
+
+      <h3>How it looked:</h3>
+      <pre><code>navigator.getBattery().then(battery =&gt; {
+  console.log("Battery level:", battery.level * 100 + "%");
+});</code></pre>
+
+      <div class="warning">⚠️ Deprecated because websites used it to fingerprint users.  
+      ✅ Avoid — browsers don’t support this anymore.</div>
+    </section>
+
+    <!-- Old Gamepad -->
+    <section id="gamepad">
+      <h2>Old Gamepad Extensions</h2>
+      <p>The <strong>Gamepad API</strong> still exists, but older extensions and vendor-specific hacks are gone.</p>
+
+      <h3>Modern version:</h3>
+      <pre><code>window.addEventListener("gamepadconnected", e =&gt; {
+  console.log("Gamepad connected:", e.gamepad.id);
+});</code></pre>
+
+      <div class="warning">⚠️ Avoid old prefixed APIs (`webkitGamepad`, `mozGamepad`).  
+      ✅ Use the standardized <strong>Gamepad API</strong>.</div>
+    </section>
+  </main>
+</body>
+</html>

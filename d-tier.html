@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D Tier APIs - JavaScript API Mastery</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f9f9fb; color: #222; display: flex; min-height: 100vh; }
+
+    aside {
+      width: 260px; background: #111; color: #fff; padding: 20px;
+      flex-shrink: 0; overflow-y: auto;
+      position: sticky; top: 0; height: 100vh;
+    }
+    aside h2 { margin-bottom: 15px; font-size: 1.3rem; }
+    aside ul { list-style: none; }
+    aside li { margin-bottom: 10px; }
+    aside a {
+      color: #bbb; text-decoration: none; display: block; padding: 8px 10px; border-radius: 6px;
+    }
+    aside a:hover, aside a.active { background: #9c27b0; color: #fff; }
+
+    main {
+      flex: 1; padding: 20px; overflow-y: auto;
+    }
+    main h1 { font-size: 2rem; margin-bottom: 10px; }
+    main h2 { margin-top: 30px; font-size: 1.5rem; color: #9c27b0; }
+    main h3 { margin-top: 20px; font-size: 1.2rem; color: #444; }
+    main p { margin: 10px 0; line-height: 1.6; }
+    pre {
+      background: #272822; color: #f8f8f2; padding: 15px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.9rem;
+    }
+
+    .tip {
+      background: #fef6ff;
+      border-left: 5px solid #9c27b0;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin: 15px 0;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      aside { width: 100%; height: auto; position: relative; }
+    }
+  </style>
+</head>
+<body>
+  <aside>
+    <h2>D Tier APIs</h2>
+    <ul>
+      <li><a href="#ambient" class="active">Ambient Light API</a></li>
+      <li><a href="#proximity">Proximity Sensor API</a></li>
+      <li><a href="#payment">Payment Request API</a></li>
+      <li><a href="#presentation">Presentation API</a></li>
+      <li><a href="index.html">⬅ Back to Home</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>📙 D Tier APIs</h1>
+    <p>These APIs are experimental, rarely used, or not well-supported across browsers. They’re interesting to know, but you probably won’t need them often.</p>
+
+    <!-- Ambient Light -->
+    <section id="ambient">
+      <h2>Ambient Light API</h2>
+      <p>Detects the light level around the user (⚠️ experimental & limited support).</p>
+
+      <h3>Step 1: Listen for light changes</h3>
+      <pre><code>window.addEventListener("devicelight", (event) =&gt; {
+  console.log("Current light level:", event.value);
+});</code></pre>
+
+      <div class="tip">💡 Could be used for auto-adjusting screen brightness. Support is very limited.</div>
+    </section>
+
+    <!-- Proximity -->
+    <section id="proximity">
+      <h2>Proximity Sensor API</h2>
+      <p>Detects if something is near the device sensor (⚠️ mostly deprecated).</p>
+
+      <h3>Step 1: Proximity event</h3>
+      <pre><code>window.addEventListener("userproximity", (event) =&gt; {
+  if (event.near) {
+    console.log("An object is close!");
+  } else {
+    console.log("Object moved away.");
+  }
+});</code></pre>
+
+      <div class="tip">💡 Could have been useful for turning off the screen during calls. Hardly supported today.</div>
+    </section>
+
+    <!-- Payment -->
+    <section id="payment">
+      <h2>Payment Request API</h2>
+      <p>Simplifies online checkout by integrating browser-stored cards and payment methods.</p>
+
+      <h3>Step 1: Create a payment request</h3>
+      <pre><code>const request = new PaymentRequest(
+  [{
+    supportedMethods: "basic-card",
+    data: { supportedNetworks: ["visa", "mastercard"] }
+  }],
+  { total: { label: "Total", amount: { currency: "USD", value: "10.00" } } }
+);
+
+request.show()
+  .then(paymentResponse =&gt; {
+    console.log(paymentResponse);
+    return paymentResponse.complete("success");
+  });</code></pre>
+
+      <div class="tip">💡 Good idea, but adoption is limited because sites prefer their own checkout systems.</div>
+    </section>
+
+    <!-- Presentation -->
+    <section id="presentation">
+      <h2>Presentation API</h2>
+      <p>Lets you present web content on a second screen (like Chromecast or smart TVs).</p>
+
+      <h3>Step 1: Connect to a presentation display</h3>
+      <pre><code>const presentationRequest = new PresentationRequest(["https://example.com/presentation"]);
+
+navigator.presentation.defaultRequest = presentationRequest;
+
+presentationRequest.start().then(connection =&gt; {
+  console.log("Connected to presentation display!");
+});</code></pre>
+
+      <div class="tip">💡 Interesting for business apps and remote presentations, but adoption is minimal.</div>
+    </section>
+  </main>
+</body>
+</html>

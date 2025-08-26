@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C Tier APIs - JavaScript API Mastery</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f4f4f9; color: #222; display: flex; min-height: 100vh; }
+
+    aside {
+      width: 260px; background: #222; color: #fff; padding: 20px;
+      flex-shrink: 0; overflow-y: auto;
+      position: sticky; top: 0; height: 100vh;
+    }
+    aside h2 { margin-bottom: 15px; font-size: 1.3rem; }
+    aside ul { list-style: none; }
+    aside li { margin-bottom: 10px; }
+    aside a {
+      color: #ccc; text-decoration: none; display: block; padding: 8px 10px; border-radius: 6px;
+    }
+    aside a:hover, aside a.active { background: #ff9800; color: #fff; }
+
+    main {
+      flex: 1; padding: 20px; overflow-y: auto;
+    }
+    main h1 { font-size: 2rem; margin-bottom: 10px; }
+    main h2 { margin-top: 30px; font-size: 1.5rem; color: #ff9800; }
+    main h3 { margin-top: 20px; font-size: 1.2rem; color: #444; }
+    main p { margin: 10px 0; line-height: 1.6; }
+    pre {
+      background: #272822; color: #f8f8f2; padding: 15px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.9rem;
+    }
+
+    .tip {
+      background: #fffbe6;
+      border-left: 5px solid #ff9800;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin: 15px 0;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      aside { width: 100%; height: auto; position: relative; }
+    }
+  </style>
+</head>
+<body>
+  <aside>
+    <h2>C Tier APIs</h2>
+    <ul>
+      <li><a href="#speech" class="active">Speech Recognition API</a></li>
+      <li><a href="#vibration">Vibration API</a></li>
+      <li><a href="#battery">Battery API</a></li>
+      <li><a href="#fullscreen">Fullscreen API</a></li>
+      <li><a href="index.html">⬅ Back to Home</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>📘 C Tier APIs</h1>
+    <p>These APIs are fun and useful in special cases, but not essential for every project. Let’s explore them step by step.</p>
+
+    <!-- Speech Recognition -->
+    <section id="speech">
+      <h2>Speech Recognition API</h2>
+      <p>Lets your app listen to the microphone and convert speech into text. 🌐 <em>Only supported in Chrome / Edge.</em></p>
+
+      <h3>Step 1: Setup recognition</h3>
+      <pre><code>const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+
+recognition.onstart = () =&gt; {
+  console.log("Voice recognition started...");
+};
+
+recognition.onresult = (event) =&gt; {
+  const text = event.results[0][0].transcript;
+  console.log("You said:", text);
+};
+
+recognition.start();</code></pre>
+
+      <div class="tip">💡 Great for accessibility features or voice-controlled apps.</div>
+    </section>
+
+    <!-- Vibration -->
+    <section id="vibration">
+      <h2>Vibration API</h2>
+      <p>Allows vibration on supported devices (mostly Android). 📱</p>
+
+      <h3>Step 1: Simple vibration</h3>
+      <pre><code>navigator.vibrate(1000); // Vibrate for 1 second</code></pre>
+
+      <h3>Step 2: Pattern vibration</h3>
+      <pre><code>navigator.vibrate([500, 200, 500]); 
+// Vibrate 500ms, pause 200ms, vibrate 500ms</code></pre>
+
+      <div class="tip">💡 Can be used for feedback in mobile games or alerts.</div>
+    </section>
+
+    <!-- Battery -->
+    <section id="battery">
+      <h2>Battery Status API</h2>
+      <p>Gives info about the device’s battery level and charging state. 🔋</p>
+
+      <h3>Step 1: Get battery info</h3>
+      <pre><code>navigator.getBattery().then(battery =&gt; {
+  console.log("Level:", battery.level * 100 + "%");
+  console.log("Charging:", battery.charging);
+});</code></pre>
+
+      <div class="tip">💡 Some browsers are deprecating this due to privacy reasons.</div>
+    </section>
+
+    <!-- Fullscreen -->
+    <section id="fullscreen">
+      <h2>Fullscreen API</h2>
+      <p>Allows elements (like videos, games, or images) to go fullscreen.</p>
+
+      <h3>Step 1: Enter fullscreen</h3>
+      <pre><code>document.getElementById("myVideo").requestFullscreen();</code></pre>
+
+      <h3>Step 2: Exit fullscreen</h3>
+      <pre><code>document.exitFullscreen();</code></pre>
+
+      <div class="tip">💡 Often used in video players, games, and image galleries.</div>
+    </section>
+  </main>
+</body>
+</html>

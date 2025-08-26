@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S Tier APIs - JavaScript API Mastery</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f4f4f9; color: #222; display: flex; min-height: 100vh; }
+
+    aside {
+      width: 260px; background: #222; color: #fff; padding: 20px;
+      flex-shrink: 0; overflow-y: auto;
+      position: sticky; top: 0; height: 100vh;
+    }
+    aside h2 { margin-bottom: 15px; font-size: 1.3rem; }
+    aside ul { list-style: none; }
+    aside li { margin-bottom: 10px; }
+    aside a {
+      color: #ccc; text-decoration: none; display: block; padding: 8px 10px; border-radius: 6px;
+    }
+    aside a:hover, aside a.active { background: #0077ff; color: #fff; }
+
+    main {
+      flex: 1; padding: 20px; overflow-y: auto;
+    }
+    main h1 { font-size: 2rem; margin-bottom: 10px; }
+    main h2 { margin-top: 30px; font-size: 1.5rem; color: #0077ff; }
+    main p { margin: 10px 0; line-height: 1.6; }
+    pre {
+      background: #272822; color: #f8f8f2; padding: 15px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.9rem;
+    }
+
+    .mini-project {
+      background: #e6f7ff; border-left: 5px solid #0077ff; padding: 15px; margin: 20px 0;
+      border-radius: 6px;
+    }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      aside { width: 100%; height: auto; position: relative; }
+    }
+  </style>
+</head>
+<body>
+  <aside>
+    <h2>S Tier APIs</h2>
+    <ul>
+      <li><a href="#dom" class="active">DOM API</a></li>
+      <li><a href="#fetch">Fetch API</a></li>
+      <li><a href="#storage">Web Storage API</a></li>
+      <li><a href="#events">Events API</a></li>
+      <li><a href="index.html">⬅ Back to Home</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>📘 S Tier APIs</h1>
+    <p>These are the most important JavaScript APIs you’ll use almost every day. They form the foundation of web development.</p>
+
+    <!-- DOM API -->
+    <section id="dom">
+      <h2>DOM API (Document Object Model)</h2>
+      <p>The DOM is the <strong>bridge between JavaScript and your webpage</strong>. Without it, JS wouldn’t be able to change text, images, or styles.</p>
+
+      <h3>Step 1: Select Elements</h3>
+      <pre><code>// Select by tag
+const heading = document.querySelector("h1");
+
+// Select by id
+const box = document.getElementById("myBox");
+
+// Select by class
+const buttons = document.querySelectorAll(".btn");
+</code></pre>
+
+      <h3>Step 2: Change Content</h3>
+      <pre><code>heading.textContent = "Hello from JavaScript!";
+box.innerHTML = "&lt;strong&gt;This is bold text&lt;/strong&gt;";
+</code></pre>
+
+      <h3>Step 3: Modify Styles</h3>
+      <pre><code>box.style.backgroundColor = "yellow";
+box.style.padding = "20px";</code></pre>
+
+      <h3>Step 4: Create & Add Elements</h3>
+      <pre><code>const newPara = document.createElement("p");
+newPara.textContent = "I was added with JavaScript!";
+document.body.appendChild(newPara);</code></pre>
+
+      <div class="mini-project">
+        <h3>🎯 Mini Project: Click to Add a Task</h3>
+        <pre><code>&lt;input id="taskInput" placeholder="New task"&gt;
+&lt;button id="addBtn"&gt;Add&lt;/button&gt;
+&lt;ul id="taskList"&gt;&lt;/ul&gt;
+
+&lt;script&gt;
+const input = document.getElementById("taskInput");
+const btn = document.getElementById("addBtn");
+const list = document.getElementById("taskList");
+
+btn.addEventListener("click", () =&gt; {
+  const li = document.createElement("li");
+  li.textContent = input.value;
+  list.appendChild(li);
+  input.value = "";
+});
+&lt;/script&gt;
+</code></pre>
+        <p>✅ You just built a <strong>tiny To-Do list app</strong> using only the DOM API!</p>
+      </div>
+    </section>
+
+    <!-- Fetch API -->
+    <section id="fetch">
+      <h2>Fetch API</h2>
+      <p>The <strong>Fetch API</strong> lets you make HTTP requests to servers (APIs). It’s how you get or send data.</p>
+
+      <h3>Step 1: Basic Fetch</h3>
+      <pre><code>fetch("https://jsonplaceholder.typicode.com/posts/1")
+  .then(response =&gt; response.json())
+  .then(data =&gt; console.log(data));</code></pre>
+
+      <h3>Step 2: POST Request</h3>
+      <pre><code>fetch("https://jsonplaceholder.typicode.com/posts", {
+  method: "POST",
+  body: JSON.stringify({ title: "Hello", body: "World" }),
+  headers: { "Content-type": "application/json; charset=UTF-8" }
+})
+.then(res =&gt; res.json())
+.then(data =&gt; console.log("Created:", data));</code></pre>
+
+      <div class="mini-project">
+        <h3>🎯 Mini Project: Load User Data</h3>
+        <pre><code>&lt;button id="loadBtn"&gt;Load User&lt;/button&gt;
+&lt;div id="output"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+const btn = document.getElementById("loadBtn");
+const out = document.getElementById("output");
+
+btn.addEventListener("click", () =&gt; {
+  fetch("https://jsonplaceholder.typicode.com/users/1")
+    .then(r =&gt; r.json())
+    .then(user =&gt; {
+      out.innerHTML = `&lt;h3&gt;${user.name}&lt;/h3&gt;&lt;p&gt;Email: ${user.email}&lt;/p&gt;`;
+    });
+});
+&lt;/script&gt;
+</code></pre>
+        <p>✅ You just built a <strong>button that loads data from an API</strong>!</p>
+      </div>
+    </section>
+
+    <!-- Storage API -->
+    <section id="storage">
+      <h2>Web Storage API</h2>
+      <p>This API gives you <strong>localStorage</strong> and <strong>sessionStorage</strong> to save data in the browser.</p>
+
+      <h3>Step 1: Save Data</h3>
+      <pre><code>localStorage.setItem("username", "Alice");
+sessionStorage.setItem("theme", "dark");</code></pre>
+
+      <h3>Step 2: Get Data</h3>
+      <pre><code>console.log(localStorage.getItem("username")); // Alice
+console.log(sessionStorage.getItem("theme")); // dark</code></pre>
+
+      <h3>Step 3: Remove Data</h3>
+      <pre><code>localStorage.removeItem("username");
+sessionStorage.clear();</code></pre>
+
+      <div class="mini-project">
+        <h3>🎯 Mini Project: Dark Mode Toggle</h3>
+        <pre><code>&lt;button id="toggle"&gt;Toggle Dark Mode&lt;/button&gt;
+
+&lt;script&gt;
+const btn = document.getElementById("toggle");
+
+if(localStorage.getItem("darkMode") === "on") {
+  document.body.style.background = "#333";
+  document.body.style.color = "#fff";
+}
+
+btn.addEventListener("click", () =&gt; {
+  if(localStorage.getItem("darkMode") === "on") {
+    localStorage.setItem("darkMode", "off");
+    document.body.style.background = "#fff";
+    document.body.style.color = "#000";
+  } else {
+    localStorage.setItem("darkMode", "on");
+    document.body.style.background = "#333";
+    document.body.style.color = "#fff";
+  }
+});
+&lt;/script&gt;
+</code></pre>
+        <p>✅ You just built a <strong>dark mode switch</strong> that remembers your choice!</p>
+      </div>
+    </section>
+
+    <!-- Events API -->
+    <section id="events">
+      <h2>Events API</h2>
+      <p>The Events API lets you respond to user actions like clicks, typing, or scrolling.</p>
+
+      <h3>Step 1: Add Event Listener</h3>
+      <pre><code>document.querySelector("button").addEventListener("click", () =&gt; {
+  alert("Button clicked!");
+});</code></pre>
+
+      <h3>Step 2: Handle Input</h3>
+      <pre><code>document.querySelector("input").addEventListener("input", e =&gt; {
+  console.log("You typed:", e.target.value);
+});</code></pre>
+
+      <h3>Step 3: Keyboard Event</h3>
+      <pre><code>document.addEventListener("keydown", e =&gt; {
+  if(e.key === "Enter") {
+    console.log("Enter was pressed!");
+  }
+});</code></pre>
+
+      <div class="mini-project">
+        <h3>🎯 Mini Project: Counter App</h3>
+        <pre><code>&lt;button id="plus"&gt;+&lt;/button&gt;
+&lt;button id="minus"&gt;-&lt;/button&gt;
+&lt;h2 id="count"&gt;0&lt;/h2&gt;
+
+&lt;script&gt;
+let count = 0;
+const plus = document.getElementById("plus");
+const minus = document.getElementById("minus");
+const display = document.getElementById("count");
+
+plus.addEventListener("click", () =&gt; {
+  count++;
+  display.textContent = count;
+});
+
+minus.addEventListener("click", () =&gt; {
+  count--;
+  display.textContent = count;
+});
+&lt;/script&gt;
+</code></pre>
+        <p>✅ You just built a <strong>working counter</strong> using events!</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

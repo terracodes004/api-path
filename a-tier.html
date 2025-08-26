@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Tier APIs - JavaScript API Mastery</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f4f4f9; color: #222; display: flex; min-height: 100vh; }
+
+    aside {
+      width: 260px; background: #222; color: #fff; padding: 20px;
+      flex-shrink: 0; overflow-y: auto;
+      position: sticky; top: 0; height: 100vh;
+    }
+    aside h2 { margin-bottom: 15px; font-size: 1.3rem; }
+    aside ul { list-style: none; }
+    aside li { margin-bottom: 10px; }
+    aside a {
+      color: #ccc; text-decoration: none; display: block; padding: 8px 10px; border-radius: 6px;
+    }
+    aside a:hover, aside a.active { background: #28a745; color: #fff; }
+
+    main {
+      flex: 1; padding: 20px; overflow-y: auto;
+    }
+    main h1 { font-size: 2rem; margin-bottom: 10px; }
+    main h2 { margin-top: 30px; font-size: 1.5rem; color: #28a745; }
+    main h3 { margin-top: 20px; font-size: 1.2rem; color: #444; }
+    main p { margin: 10px 0; line-height: 1.6; }
+    pre {
+      background: #272822; color: #f8f8f2; padding: 15px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.9rem;
+    }
+
+    .tip {
+      background: #fffbe6;
+      border-left: 5px solid #f1c40f;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin: 15px 0;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      aside { width: 100%; height: auto; position: relative; }
+    }
+  </style>
+</head>
+<body>
+  <aside>
+    <h2>A Tier APIs</h2>
+    <ul>
+      <li><a href="#canvas" class="active">Canvas API</a></li>
+      <li><a href="#geolocation">Geolocation API</a></li>
+      <li><a href="#workers">Web Workers API</a></li>
+      <li><a href="#file">File API</a></li>
+      <li><a href="index.html">⬅ Back to Home</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>📗 A Tier APIs</h1>
+    <p>These APIs are powerful and often used in modern projects. While not as common as the S Tier, they unlock unique features like graphics, background tasks, and file access.</p>
+
+    <!-- Canvas API -->
+    <section id="canvas">
+      <h2>Canvas API</h2>
+      <p>The Canvas API lets you draw shapes, text, and even create games or animations.</p>
+
+      <h3>Step 1: Set up the canvas</h3>
+      <pre><code>&lt;canvas id="myCanvas" width="300" height="150" style="border:1px solid black;"&gt;&lt;/canvas&gt;
+
+&lt;script&gt;
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+&lt;/script&gt;</code></pre>
+
+      <h3>Step 2: Draw shapes</h3>
+      <pre><code>ctx.fillStyle = "red";
+ctx.fillRect(20, 20, 100, 50); // Rectangle</code></pre>
+
+      <h3>Step 3: Draw text</h3>
+      <pre><code>ctx.font = "20px Arial";
+ctx.fillText("Hello Canvas!", 20, 100);</code></pre>
+
+      <h3>Step 4: Animations</h3>
+      <pre><code>let x = 0;
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "blue";
+  ctx.fillRect(x, 50, 50, 50);
+  x += 2;
+  requestAnimationFrame(animate);
+}
+animate();</code></pre>
+
+      <div class="tip">💡 Canvas is the foundation of web games and data visualizations. Combine it with the Events API for interactivity.</div>
+    </section>
+
+    <!-- Geolocation API -->
+    <section id="geolocation">
+      <h2>Geolocation API</h2>
+      <p>This API gets the user’s location (with permission). Useful for maps, weather apps, and travel sites.</p>
+
+      <h3>Step 1: Basic location</h3>
+      <pre><code>navigator.geolocation.getCurrentPosition(
+  (position) => {
+    console.log("Latitude:", position.coords.latitude);
+    console.log("Longitude:", position.coords.longitude);
+  },
+  (error) => console.error(error)
+);</code></pre>
+
+      <h3>Step 2: Watch position</h3>
+      <pre><code>const watchId = navigator.geolocation.watchPosition((position) => {
+  console.log("Moving:", position.coords.latitude, position.coords.longitude);
+});</code></pre>
+
+      <div class="tip">💡 Always handle errors (like when users deny permission). Don’t use geolocation without user consent!</div>
+    </section>
+
+    <!-- Web Workers API -->
+    <section id="workers">
+      <h2>Web Workers API</h2>
+      <p>Web Workers let you run JavaScript in the background, so your app doesn’t freeze during heavy tasks.</p>
+
+      <h3>Step 1: Create a worker file</h3>
+      <pre><code>// worker.js
+self.onmessage = function(event) {
+  let num = event.data;
+  let result = 0;
+  for (let i = 0; i &lt; num; i++) result += i;
+  self.postMessage(result);
+};</code></pre>
+
+      <h3>Step 2: Use the worker</h3>
+      <pre><code>const worker = new Worker("worker.js");
+worker.postMessage(1000000);
+worker.onmessage = (event) => {
+  console.log("Result from worker:", event.data);
+};</code></pre>
+
+      <div class="tip">💡 Web Workers are amazing for tasks like image processing or math-heavy calculations.</div>
+    </section>
+
+    <!-- File API -->
+    <section id="file">
+      <h2>File API</h2>
+      <p>The File API allows users to upload, read, and process files directly in the browser.</p>
+
+      <h3>Step 1: File input</h3>
+      <pre><code>&lt;input type="file" id="fileInput"&gt;</code></pre>
+
+      <h3>Step 2: Read file content</h3>
+      <pre><code>const input = document.getElementById("fileInput");
+input.addEventListener("change", (event) =&gt; {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    console.log("File content:", e.target.result);
+  };
+
+  reader.readAsText(file);
+});</code></pre>
+
+      <div class="tip">💡 With File API, you can build text editors, preview images, or process CSV data directly in the browser.</div>
+    </section>
+  </main>
+</body>
+</html>
