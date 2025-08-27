@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>B-Tier APIs - Part 2</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>B-Tier APIs - Part 2</h1>
+    <p>More practical APIs that are nice to know but not always essential.</p>
+  </header>
+
+  <main>
+    <!-- Battery Status API -->
+    <section>
+      <h2>🔋 Battery Status API</h2>
+      <p id="batteryInfo">Checking battery...</p>
+      <script>
+        if (navigator.getBattery) {
+          navigator.getBattery().then(battery => {
+            function updateBattery() {
+              document.getElementById("batteryInfo").textContent =
+                `Level: ${(battery.level * 100).toFixed(0)}% | Charging: ${battery.charging}`;
+            }
+            updateBattery();
+            battery.addEventListener("levelchange", updateBattery);
+            battery.addEventListener("chargingchange", updateBattery);
+          });
+        } else {
+          document.getElementById("batteryInfo").textContent = "Battery API not supported.";
+        }
+      </script>
+    </section>
+
+    <!-- Screen API -->
+    <section>
+      <h2>🖥️ Screen API</h2>
+      <p id="screenInfo">Getting screen info...</p>
+      <script>
+        function updateScreenInfo() {
+          document.getElementById("screenInfo").textContent =
+            `Width: ${screen.width}, Height: ${screen.height}, Orientation: ${screen.orientation.type}`;
+        }
+        updateScreenInfo();
+        screen.orientation.addEventListener("change", updateScreenInfo);
+      </script>
+    </section>
+
+    <!-- Vibration API -->
+    <section>
+      <h2>📳 Vibration API</h2>
+      <p>
+        Makes your device vibrate (only works on supported devices like smartphones).
+      </p>
+      <button onclick="navigator.vibrate([300, 100, 300])">Vibrate!</button>
+    </section>
+
+    <!-- Speech Synthesis API -->
+    <section>
+      <h2>🗣️ Speech Synthesis API</h2>
+      <p>Convert text to speech.</p>
+      <input id="speechText" type="text" value="Hello, I am the Speech Synthesis API!">
+      <button onclick="speakText()">Speak</button>
+      <script>
+        function speakText() {
+          let text = document.getElementById("speechText").value;
+          let utterance = new SpeechSynthesisUtterance(text);
+          speechSynthesis.speak(utterance);
+        }
+      </script>
+    </section>
+
+    <!-- BroadcastChannel API -->
+    <section>
+      <h2>📡 BroadcastChannel API</h2>
+      <p>Communicate between browser tabs (open multiple tabs to test).</p>
+      <input id="bcMessage" type="text" placeholder="Type a message">
+      <button onclick="sendMessage()">Send to other tabs</button>
+      <p id="bcOutput"></p>
+      <script>
+        const channel = new BroadcastChannel("demo_channel");
+        channel.onmessage = (event) => {
+          document.getElementById("bcOutput").textContent = "Received: " + event.data;
+        };
+        function sendMessage() {
+          const msg = document.getElementById("bcMessage").value;
+          channel.postMessage(msg);
+        }
+      </script>
+    </section>
+
+    <!-- Navigation -->
+    <hr>
+    <nav class="part-navigation">
+      <a href="b-tier.html">⬅ Back to Part 1</a>
+      <a href="index.html">🏠 Home</a>
+    </nav>
+  </main>
+
+  <footer>
+    <p>Made for Offline Learning | 2025</p>
+  </footer>
+</body>
+</html>
