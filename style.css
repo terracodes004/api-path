@@ -1,0 +1,146 @@
+/* ====== General Reset ====== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+  background: #f4f4f9;
+  color: #333;
+  padding: 0;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ====== Header ====== */
+header {
+  background: linear-gradient(135deg, #0078d7, #0053a0);
+  color: white;
+  text-align: center;
+  padding: 2rem 1rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+header p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+/* ====== Main Content ====== */
+main {
+  flex: 1;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+h2 {
+  margin: 1.5rem 0 1rem;
+  font-size: 1.5rem;
+  color: #0053a0;
+}
+
+section {
+  background: white;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+pre {
+  background: #272822;
+  color: #f8f8f2;
+  padding: 0.8rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.9rem;
+}
+
+/* ====== Tier Grid ====== */
+.tier-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.tier-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+  border-radius: 12px;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tier-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Tier Colors */
+.tier-card.s { background: #ff4757; }   /* S Tier - Red */
+.tier-card.a { background: #ffa502; }   /* A Tier - Orange */
+.tier-card.b { background: #2ed573; }   /* B Tier - Green */
+.tier-card.c { background: #1e90ff; }   /* C Tier - Blue */
+.tier-card.d { background: #3742fa; }   /* D Tier - Indigo */
+.tier-card.f { background: #747d8c; }   /* F Tier - Grey */
+
+/* ====== Buttons ====== */
+button {
+  background: #0078d7;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 0.3rem;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #0053a0;
+}
+
+/* ====== Navigation Links ====== */
+.part-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.part-navigation a {
+  background: #0078d7;
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.part-navigation a:hover {
+  background: #0053a0;
+}
+
+/* ====== Footer ====== */
+footer {
+  background: #222;
+  color: #ccc;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
