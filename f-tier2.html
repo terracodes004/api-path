@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F-Tier APIs - Part 2</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>F-Tier APIs - Part 2</h1>
+    <p>Obsolete, deprecated, and insecure APIs. 🚨</p>
+  </header>
+
+  <main>
+    <!-- WebVR v1 -->
+    <section>
+      <h2>🕶️ WebVR API (Deprecated)</h2>
+      <p id="webvr">Checking WebVR support...</p>
+      <script>
+        if ('getVRDisplays' in navigator) {
+          navigator.getVRDisplays().then(displays => {
+            document.getElementById("webvr").textContent =
+              displays.length ? "WebVR supported (but deprecated)" : "No VR displays found.";
+          });
+        } else {
+          document.getElementById("webvr").textContent = "WebVR not supported (replaced by WebXR).";
+        }
+      </script>
+    </section>
+
+    <!-- AppCache -->
+    <section>
+      <h2>📦 AppCache (Obsolete)</h2>
+      <p>Application Cache is no longer supported in most browsers.  
+      Use Service Workers instead.</p>
+      <pre><code>&lt;html manifest="offline.appcache"&gt;</code></pre>
+    </section>
+
+    <!-- execCommand -->
