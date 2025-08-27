@@ -3,120 +3,109 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>A-Tier APIs - Part 2</title>
+  <title>S-Tier APIs - Part 2</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>A-Tier JavaScript APIs (Part 2)</h1>
-    <p>Continuing with the powerful and practical APIs you need to know.</p>
+    <h1>S-Tier JavaScript APIs (Part 2)</h1>
+    <p>Exploring more of the most powerful and game-changing APIs.</p>
   </header>
 
   <main>
     <article>
-      <h2>1. Geolocation API (Advanced Use)</h2>
-      <p>The <strong>Geolocation API</strong> allows you to retrieve a user's real-world location. 
-      In Part 1 we touched the basics — now let’s add accuracy and error handling.</p>
+      <h2>1. File System Access API</h2>
+      <p>The <strong>File System Access API</strong> lets websites read and write 
+      files directly on the user’s device (with permission).</p>
 
       <pre><code>
-// Request current position with options
-navigator.geolocation.getCurrentPosition(
-  (position) => {
-    console.log("Latitude:", position.coords.latitude);
-    console.log("Longitude:", position.coords.longitude);
-    console.log("Accuracy (meters):", position.coords.accuracy);
-  },
-  (error) => {
-    console.error("Error getting location:", error.message);
-  },
-  { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-);
+async function saveFile() {
+  const handle = await window.showSaveFilePicker({
+    suggestedName: "example.txt",
+    types: [{ description: "Text Files", accept: { "text/plain": [".txt"] } }]
+  });
+
+  const writable = await handle.createWritable();
+  await writable.write("Hello from S-Tier Part 2!");
+  await writable.close();
+}
+
+saveFile();
       </code></pre>
-      <p><strong>Pro tip:</strong> Always provide a fallback if the user denies permission.</p>
+      <p><strong>Note:</strong> Only works in Chromium-based browsers.</p>
     </article>
 
     <article>
-      <h2>2. Clipboard API (Writing to Clipboard)</h2>
-      <p>In Part 1 we learned how to read from the clipboard. Now let’s learn how to 
-      <strong>write text programmatically</strong>.</p>
+      <h2>2. File Handling API</h2>
+      <p>The <strong>File Handling API</strong> allows installed web apps 
+      (via PWA) to become file handlers for certain file types.</p>
 
       <pre><code>
-async function copyText() {
-  try {
-    await navigator.clipboard.writeText("Copied from A-Tier Part 2!");
-    alert("Text copied to clipboard.");
-  } catch (err) {
-    console.error("Failed to copy: ", err);
-  }
-}
+// In manifest.json:
+// "file_handlers": [{
+//   "action": "/open-file",
+//   "accept": { "text/plain": [".txt"] }
+// }]
 
-copyText();
-      </code></pre>
-      <p><strong>Use case:</strong> Copying coupon codes, shareable links, or user-generated content.</p>
-    </article>
-
-    <article>
-      <h2>3. Fullscreen API</h2>
-      <p>The <strong>Fullscreen API</strong> lets you programmatically toggle fullscreen mode for elements. 
-      Great for video players, games, or immersive apps.</p>
-
-      <pre><code>
-const elem = document.documentElement;
-
-function goFullscreen() {
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  }
-}
-
-function exitFullscreen() {
-  if (document.exitFullscreen) {
-    document.exitFullscreen();
-  }
-}
-      </code></pre>
-
-      <button onclick="goFullscreen()">Enter Fullscreen</button>
-      <button onclick="exitFullscreen()">Exit Fullscreen</button>
-    </article>
-
-    <article>
-      <h2>4. Vibration API</h2>
-      <p>The <strong>Vibration API</strong> can make a mobile device vibrate. 
-      It’s mainly useful for games or notifications.</p>
-
-      <pre><code>
-if ("vibrate" in navigator) {
-  // Vibrate for 200ms
-  navigator.vibrate(200);
-
-  // Complex vibration pattern: [on, off, on, off...]
-  navigator.vibrate([100, 50, 200, 50, 300]);
-}
-      </code></pre>
-      <p><strong>Note:</strong> Works only on supported mobile devices.</p>
-    </article>
-
-    <article>
-      <h2>5. Page Visibility API</h2>
-      <p>The <strong>Page Visibility API</strong> allows you to detect if a page is 
-      <em>visible</em> or <em>hidden</em>. Useful for pausing videos or animations 
-      when the user switches tabs.</p>
-
-      <pre><code>
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "hidden") {
-    console.log("User left the page — pause things.");
-  } else {
-    console.log("User returned — resume things.");
+// Example listener:
+window.launchQueue.setConsumer((launchParams) => {
+  for (const file of launchParams.files) {
+    console.log("Opened file:", file.name);
   }
 });
       </code></pre>
     </article>
+
+    <article>
+      <h2>3. Shape Detection API</h2>
+      <p>The <strong>Shape Detection API</strong> gives access to 
+      text, barcode, and face detection in images.</p>
+
+      <pre><code>
+if ("FaceDetector" in window) {
+  const faceDetector = new FaceDetector();
+  const img = document.querySelector("img");
+
+  faceDetector.detect(img)
+    .then(faces => console.log("Faces detected:", faces))
+    .catch(err => console.error("Error:", err));
+}
+      </code></pre>
+      <p><strong>Use case:</strong> AR apps, barcode scanners, 
+      smart camera apps.</p>
+    </article>
+
+    <article>
+      <h2>4. WebHID API</h2>
+      <p>The <strong>WebHID API</strong> allows web apps to 
+      communicate with Human Interface Devices (HID) like 
+      game controllers, VR equipment, or custom hardware.</p>
+
+      <pre><code>
+const devices = await navigator.hid.requestDevice({ filters: [] });
+console.log("Connected devices:", devices);
+      </code></pre>
+    </article>
+
+    <article>
+      <h2>5. WebBluetooth API</h2>
+      <p>The <strong>WebBluetooth API</strong> lets your website 
+      connect to Bluetooth devices securely.</p>
+
+      <pre><code>
+navigator.bluetooth.requestDevice({
+  acceptAllDevices: true
+}).then(device => {
+  console.log("Connected to:", device.name);
+});
+      </code></pre>
+      <p><strong>Use case:</strong> IoT devices, wearables, 
+      smart home gadgets.</p>
+    </article>
   </main>
 
   <footer>
-    <p><a href="a-tier.html">⬅ Back to A-Tier Part 1</a> | 
+    <p><a href="s-tier.html">⬅ Back to S-Tier Part 1</a> | 
     <a href="index.html">🏠 Home</a></p>
   </footer>
 </body>
