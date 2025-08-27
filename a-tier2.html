@@ -8,115 +8,116 @@
 </head>
 <body>
   <header>
-    <h1>A-Tier APIs - Part 2</h1>
-    <p>More useful APIs to make your apps smarter & interactive.</p>
+    <h1>A-Tier JavaScript APIs (Part 2)</h1>
+    <p>Continuing with the powerful and practical APIs you need to know.</p>
   </header>
 
   <main>
-    <!-- Clipboard API -->
-    <section>
-      <h2>📋 Clipboard API</h2>
-      <p>
-        The Clipboard API lets you read from or write text to the system clipboard.
-        Very useful for "copy" buttons.
-      </p>
-      <button onclick="copyText()">Copy Text</button>
-      <input id="clipInput" type="text" value="Hello from Clipboard API!">
-      <script>
-        function copyText() {
-          let input = document.getElementById("clipInput");
-          navigator.clipboard.writeText(input.value)
-            .then(() => alert("Copied: " + input.value))
-            .catch(err => alert("Failed: " + err));
-        }
-      </script>
-    </section>
+    <article>
+      <h2>1. Geolocation API (Advanced Use)</h2>
+      <p>The <strong>Geolocation API</strong> allows you to retrieve a user's real-world location. 
+      In Part 1 we touched the basics — now let’s add accuracy and error handling.</p>
 
-    <!-- Fullscreen API -->
-    <section>
-      <h2>🖥️ Fullscreen API</h2>
-      <p>
-        Make an element take over the whole screen. Great for videos, games, or presentations.
-      </p>
-      <button onclick="goFullscreen()">Go Fullscreen</button>
-      <div id="fsBox" style="width:200px;height:100px;background:#4caf50;color:#fff;text-align:center;line-height:100px;">
-        Fullscreen Me
-      </div>
-      <script>
-        function goFullscreen() {
-          let box = document.getElementById("fsBox");
-          if (box.requestFullscreen) {
-            box.requestFullscreen();
-          }
-        }
-      </script>
-    </section>
+      <pre><code>
+// Request current position with options
+navigator.geolocation.getCurrentPosition(
+  (position) => {
+    console.log("Latitude:", position.coords.latitude);
+    console.log("Longitude:", position.coords.longitude);
+    console.log("Accuracy (meters):", position.coords.accuracy);
+  },
+  (error) => {
+    console.error("Error getting location:", error.message);
+  },
+  { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+);
+      </code></pre>
+      <p><strong>Pro tip:</strong> Always provide a fallback if the user denies permission.</p>
+    </article>
 
-    <!-- Page Visibility API -->
-    <section>
-      <h2>👀 Page Visibility API</h2>
-      <p>
-        Detect when the user switches tabs. Useful for pausing videos or saving battery.
-      </p>
-      <p id="visibilityStatus">Current status: visible</p>
-      <script>
-        document.addEventListener("visibilitychange", () => {
-          document.getElementById("visibilityStatus").textContent =
-            "Current status: " + document.visibilityState;
-        });
-      </script>
-    </section>
+    <article>
+      <h2>2. Clipboard API (Writing to Clipboard)</h2>
+      <p>In Part 1 we learned how to read from the clipboard. Now let’s learn how to 
+      <strong>write text programmatically</strong>.</p>
 
-    <!-- Device Orientation API -->
-    <section>
-      <h2>📱 Device Orientation API</h2>
-      <p>
-        Detect device tilt & motion (works on phones/tablets with sensors).
-      </p>
-      <p id="orientationData">Rotate your device to see updates...</p>
-      <script>
-        window.addEventListener("deviceorientation", (event) => {
-          document.getElementById("orientationData").textContent =
-            `Alpha: ${event.alpha.toFixed(2)} | Beta: ${event.beta.toFixed(2)} | Gamma: ${event.gamma.toFixed(2)}`;
-        });
-      </script>
-    </section>
+      <pre><code>
+async function copyText() {
+  try {
+    await navigator.clipboard.writeText("Copied from A-Tier Part 2!");
+    alert("Text copied to clipboard.");
+  } catch (err) {
+    console.error("Failed to copy: ", err);
+  }
+}
 
-    <!-- Intersection Observer -->
-    <section>
-      <h2>🔍 Intersection Observer</h2>
-      <p>
-        Detect when elements scroll into view (good for animations or lazy loading).
-      </p>
-      <div class="observer-box" style="height:200px;background:#ddd;margin-bottom:20px;">
-        Scroll down to reveal...
-      </div>
-      <div id="hiddenBox" style="height:100px;background:#ff5722;color:#fff;text-align:center;line-height:100px;opacity:0;">
-        I just became visible!
-      </div>
-      <script>
-        let hiddenBox = document.getElementById("hiddenBox");
-        let observer = new IntersectionObserver(entries => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              hiddenBox.style.opacity = "1";
-            }
-          });
-        });
-        observer.observe(hiddenBox);
-      </script>
-    </section>
+copyText();
+      </code></pre>
+      <p><strong>Use case:</strong> Copying coupon codes, shareable links, or user-generated content.</p>
+    </article>
 
-    <!-- Navigation -->
-    <hr>
-    <nav class="part-navigation">
-      <a href="a-tier.html">⬅ Back to Part 1</a>
-      <a href="index.html">🏠 Home</a>
-    </nav>
+    <article>
+      <h2>3. Fullscreen API</h2>
+      <p>The <strong>Fullscreen API</strong> lets you programmatically toggle fullscreen mode for elements. 
+      Great for video players, games, or immersive apps.</p>
+
+      <pre><code>
+const elem = document.documentElement;
+
+function goFullscreen() {
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  }
+}
+
+function exitFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  }
+}
+      </code></pre>
+
+      <button onclick="goFullscreen()">Enter Fullscreen</button>
+      <button onclick="exitFullscreen()">Exit Fullscreen</button>
+    </article>
+
+    <article>
+      <h2>4. Vibration API</h2>
+      <p>The <strong>Vibration API</strong> can make a mobile device vibrate. 
+      It’s mainly useful for games or notifications.</p>
+
+      <pre><code>
+if ("vibrate" in navigator) {
+  // Vibrate for 200ms
+  navigator.vibrate(200);
+
+  // Complex vibration pattern: [on, off, on, off...]
+  navigator.vibrate([100, 50, 200, 50, 300]);
+}
+      </code></pre>
+      <p><strong>Note:</strong> Works only on supported mobile devices.</p>
+    </article>
+
+    <article>
+      <h2>5. Page Visibility API</h2>
+      <p>The <strong>Page Visibility API</strong> allows you to detect if a page is 
+      <em>visible</em> or <em>hidden</em>. Useful for pausing videos or animations 
+      when the user switches tabs.</p>
+
+      <pre><code>
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    console.log("User left the page — pause things.");
+  } else {
+    console.log("User returned — resume things.");
+  }
+});
+      </code></pre>
+    </article>
   </main>
 
   <footer>
-    <p>Made for Offline Learning | 2025</p>
+    <p><a href="a-tier.html">⬅ Back to A-Tier Part 1</a> | 
+    <a href="index.html">🏠 Home</a></p>
   </footer>
 </body>
 </html>
