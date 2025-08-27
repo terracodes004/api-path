@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>S Tier — Part 2 (Advanced) | JS API Mastery</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Page-specific enhancements that work alongside style.css */
+    :root {
+      --brand: #4CAF50;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --card: #0b1220;
+      --card-border: #1f2a44;
+      --accent: #22c55e;
+    }
+    main { padding: 1.25rem; max-width: 1100px; margin: 0 auto; }
+    header { background: #0b1220; color: #fff; padding-bottom: 0.75rem; }
+    header nav a { color: #9ecbff; text-decoration: none; }
+    .subhead { color: #adc2ff; margin: 0.35rem 0 1.25rem; }
+    .grid { display:grid; gap:1.25rem; grid-template-columns: repeat(12,1fr); }
+    .col-12 { grid-column: span 12; }
+    .col-6 { grid-column: span 6; }
+    @media (max-width: 900px){ .col-6{ grid-column: span 12; } }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1rem 1.1rem;
+      color: #e6eefc;
+      box-shadow: 0 6px 24px rgba(0,0,0,.25);
+    }
+    .card h2 { margin-bottom: .35rem; font-size: 1.35rem; color:#eaf2ff; }
+    .card h3 { margin: .75rem 0 .35rem; font-size: 1.05rem; color:#cfe0ff; }
+    .card p { color:#c5d3ee; }
+    .badge { display:inline-block; font-size:.78rem; padding:.2rem .5rem; border-radius:999px; background:#19315e; color:#b5d3ff; margin-left:.5rem; }
+    .tip, .warn {
+      border-left: 4px solid var(--accent);
+      background: #0e1a31;
+      padding: .7rem .9rem;
+      border-radius: 8px;
+      margin:.7rem 0;
+      color:#cfe0ff;
+    }
+    .warn { border-left-color:#f97316; background:#2a160e; color:#ffd7c2; }
+
+    pre { overflow:auto; background:#0e1425; color:#dbe7ff; padding:.9rem; border-radius:10px; border:1px solid #1e2741; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:.93rem; }
+
+    .demo {
+      margin-top:.6rem; padding:.8rem;
+      background:#0f172a; border:1px dashed #1e2a49;
+      border-radius:10px; color:#eaf2ff;
+    }
+    button, .btn {
+      background: var(--brand); color:#04210e; border:none; padding:.55rem .9rem;
+      border-radius:10px; font-weight:700; cursor:pointer;
+    }
+    button.secondary { background:#0e223f; color:#cfe0ff; }
+    .row { display:flex; gap:.5rem; flex-wrap:wrap; }
+    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; }
+    .small { font-size:.9rem; color:#bfd1ff; }
+    .ok { color:#86efac; }
+    .bad { color:#fca5a5; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 style="text-align:center;margin-top:.6rem;">S-Tier — Part 2: Advanced Techniques</h1>
+    <p class="subhead" style="text-align:center;">
+      Level up your core browser API skills with practical patterns, performance tweaks, and robust demos.
+    </p>
+    <nav style="text-align:center;margin:.5rem 0 1rem;">
+      <a href="index.html">← Back to Home</a>
+      &nbsp;•&nbsp;
+      <a href="s-tier.html">Part 1</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <!-- DOM Advanced -->
+      <section class="card col-12" id="dom-advanced">
+        <h2>1) DOM — Templates, Fragments, MutationObserver <span class="badge">Advanced DOM</span></h2>
+        <p>Render lists efficiently, avoid layout thrash, and observe changes without polling.</p>
+
+        <h3>Step A — Use &lt;template&gt; with DocumentFragment (fast list rendering)</h3>
+        <pre><code>&lt;template id="user-row"&gt;
+  &lt;li class="user"&gt;&lt;strong class="name"&gt;&lt;/strong&gt; &lt;span class="role"&gt;&lt;/span&gt;&lt;/li&gt;
+&lt;/template&gt;
+
+&lt;ul id="users"&gt;&lt;/ul&gt;
+
+&lt;script&gt;
+const data = [
+  { name: "Ada", role: "Engineer" },
+  { name: "Brendan", role: "Language Designer" },
+  { name: "Grace", role: "Rear Admiral" },
+];
+
+const ul = document.querySelector("#users");
+const tpl = document.querySelector("#user-row");
+const frag = document.createDocumentFragment();
+
+for (const u of data) {
+  const node = tpl.content.cloneNode(true);
+  node.querySelector(".name").textContent = u.name;
+  node.querySelector(".role").textContent = `— ${u.role}`;
+  frag.appendChild(node);
+}
+ul.appendChild(frag); // 1 paint, minimal reflow ✅
+&lt;/script&gt;</code></pre>
+
+        <div class="demo" id="dom-demo">
+          <div class="row">
+            <button id="add-rows">Render 1,000 rows (fragment)</button>
+            <button id="clear-rows" class="secondary">Clear</button>
+          </div>
+          <template id="row-template">
+            <li class="mono">Row <span class="i"></span></li>
+          </template>
+          <ul id="big-list" style="margin-top:.5rem;max-height:220px;overflow:auto;"></ul>
+          <p class="small" id="render-time"></p>
+        </div>
+
+        <h3>Step B — Watch DOM changes with <span class="mono">MutationObserver</span></h3>
+        <pre><code>const target = document.querySelector("#big-list");
+const obs = new MutationObserver((mutations) =&gt; {
+  console.log("Changes:", mutations.length);
+});
+obs.observe(target, { childList: true, subtree: true });
+// obs.disconnect() to stop.
+</code></pre>
+      </section>
+
+      <!-- Events Advanced -->
+      <section class="card col-12" id="events-advanced">
+        <h2>2) Events — Delegation, Abortable & Passive Listeners <span class="badge">Pro Patterns</span></h2>
+        <p>Write handlers that are faster, safer, and easier to clean up.</p>
+
+        <h3>Step A — Event Delegation (1 listener for many children)</h3>
+        <pre><code>document.querySelector("#grid").addEventListener("click", (e) =&gt; {
+  const btn = e.target.closest("[data-id]");
+  if (!btn) return;
+  console.log("Clicked card:", btn.dataset.id);
+});
+</code></pre>
+
+        <h3>Step B — Abortable listeners (auto-remove with <span class="mono">AbortController</span>)</h3>
+        <pre><code>const ac = new AbortController();
+window.addEventListener("mousemove", (e) =&gt; {
+  // ... handle
+}, { signal: ac.signal, passive: true });  // passive avoids blocking scroll
+
+setTimeout(() =&gt; ac.abort(), 5000); // auto cleanup after 5s
+</code></pre>
+
+        <div class="demo">
+          <div class="row" style="align-items:center;">
+            <button id="start-move">Track mouse (5s, passive+abortable)</button>
+            <span class="small" id="move-out">idle…</span>
+          </div>
+          <div id="grid" style="margin-top:.6rem; display:grid; grid-template-columns: repeat(auto-fit,minmax(120px,1fr)); gap:.5rem;">
+            <button class="btn" data-id="A1">Card A1</button>
+            <button class="btn" data-id="A2">Card A2</button>
+            <button class="btn" data-id="B1">Card B1</button>
+            <button class="btn" data-id="B2">Card B2</button>
+          </div>
+          <p class="small">Tip: Delegation = 1 listener on #grid instead of 4 per card.</p>
+        </div>
+      </section>
+
+      <!-- Fetch Advanced -->
+      <section class="card col-12" id="fetch-advanced">
+        <h2>3) Fetch — Abort, Timeout & Retry (pattern) <span class="badge">Network Resilience</span></h2>
+        <p>These patterns harden your requests. (Demo uses a fake “fetch” to avoid external calls.)</p>
+
+        <h3>Step — Reusable helpers</h3>
+        <pre><code>// Timeout wrapper
+async function fetchWithTimeout(url, opts = {}, ms = 5000) {
+  const ac = new AbortController();
+  const timer = setTimeout(() =&gt; ac.abort(), ms);
+  try {
+    const res = await fetch(url, { ...opts, signal: ac.signal });
+    return res;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Retry with exponential backoff
+async function fetchRetry(url, opts = {}, attempts = 3, backoff = 400) {
+  try {
+    return await fetch(url, opts);
+  } catch (err) {
+    if (attempts &lt;= 1) throw err;
+    await new Promise(r =&gt; setTimeout(r, backoff));
+    return fetchRetry(url, opts, attempts - 1, backoff * 2);
+  }
+}
+</code></pre>
+
+        <div class="demo" id="fetch-demo">
+          <div class="row">
+            <button id="simulate-timeout">Simulate timeout+abort</button>
+            <button id="simulate-retry" class="secondary">Simulate retry (fails twice)</button>
+          </div>
+          <p class="small" id="fetch-status">ready…</p>
+        </div>
+
+        <div class="tip">
+          For real APIs, combine both: <span class="mono">fetchWithTimeout</span> inside <span class="mono">fetchRetry</span>.
+        </div>
+      </section>
+
+      <!-- Storage Advanced -->
+      <section class="card col-12" id="storage-advanced">
+        <h2>4) Storage — Versioning, Atomic Writes, Storage Events <span class="badge">Robust Local Data</span></h2>
+        <p>Avoid corrupted data and coordinate across tabs.</p>
+
+        <h3>Step A — Versioned storage (migrations)</h3>
+        <pre><code>const KV_KEY = "settings.v2"; // bump when schema changes
+
+function saveSettings(obj) {
+  const payload = { v: 2, savedAt: Date.now(), data: obj };
+  localStorage.setItem(KV_KEY, JSON.stringify(payload));
+}
+function loadSettings() {
+  const raw = localStorage.getItem(KV_KEY);
+  if (!raw) return null;
+  const parsed = JSON.parse(raw);
+  if (parsed.v !== 2) { /* migrate here */ }
+  return parsed.data;
+}
+</code></pre>
+
+        <h3>Step B — Listen for changes from other tabs</h3>
+        <pre><code>window.addEventListener("storage", (e) =&gt; {
+  if (e.key === KV_KEY) {
+    console.log("Settings changed in another tab:", e.newValue);
+  }
+});
+</code></pre>
+
+        <div class="demo">
+          <div class="row">
+            <input id="theme-input" placeholder="theme: light | dark" class="mono" />
+            <button id="save-theme">Save</button>
+            <button id="load-theme" class="secondary">Load</button>
+          </div>
+          <p class="small" id="theme-out">no value…</p>
+        </div>
+      </section>
+
+      <!-- Service Worker Advanced (concept & snippet) -->
+      <section class="card col-12" id="sw-advanced">
+        <h2>5) Service Workers — Stale-While-Revalidate (snippet) <span class="badge">Caching Strategy</span></h2>
+        <p>Best of both worlds: fast cached response, then quietly refresh cache in the background for next time.</p>
+        <pre><code>// sw.js (strategy example)
+self.addEventListener("fetch", (event) =&gt; {
+  event.respondWith((async () =&gt; {
+    const cache = await caches.open("api-path-v3");
+    const cached = await cache.match(event.request);
+    const networkPromise = fetch(event.request).then(res =&gt; {
+      cache.put(event.request, res.clone());
+      return res;
+    }).catch(() =&gt; cached);
+    return cached || networkPromise; // stale-while-revalidate
+  })());
+});
+</code></pre>
+        <div class="tip">Use this for HTML, CSS, JS, and immutable assets. Be careful with API responses that must be fresh.</div>
+      </section>
+
+      <!-- Web Workers Advanced -->
+      <section class="card col-12" id="ww-advanced">
+        <h2>6) Web Workers — Offload Heavy Work <span class="badge">Main-Thread Relief</span></h2>
+        <p>Keep the UI fluid by moving CPU-intensive tasks into a background thread.</p>
+
+        <h3>Step — Inline worker via Blob (no extra file)</h3>
+        <pre><code>// Main thread
+const workerCode = `
+self.onmessage = (e) =&gt; {
+  const n = e.data;
+  // compute primes up to n (naive)
+  const primes = [];
+  outer: for (let i = 2; i &lt;= n; i++) {
+    for (let j = 2; j * j &lt;= i; j++) if (i % j === 0) continue outer;
+    primes.push(i);
+  }
+  self.postMessage(primes.length);
+};`;
+
+const blob = new Blob([workerCode], { type: "application/javascript" });
+const url = URL.createObjectURL(blob);
+const worker = new Worker(url);
+worker.onmessage = (e) =&gt; console.log("Prime count:", e.data);
+worker.postMessage(100000);
+</code></pre>
+
+        <div class="demo">
+          <div class="row">
+            <input id="prime-input" type="number" min="10000" step="10000" value="200000" class="mono" />
+            <button id="prime-run">Count primes (Worker)</button>
+          </div>
+          <p class="small" id="prime-out">idle…</p>
+        </div>
+      </section>
+
+      <!-- Canvas Advanced -->
+      <section class="card col-12" id="canvas-advanced">
+        <h2>7) Canvas — Hi-DPI Scaling & Perf <span class="badge">Crisp + Smooth</span></h2>
+        <p>Render sharp lines on Retina/Hi-DPI screens and animate at 60fps.</p>
+
+        <h3>Step — Scale by <span class="mono">devicePixelRatio</span></h3>
+        <pre><code>const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+function sizeCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+sizeCanvas();
+window.addEventListener("resize", sizeCanvas);
+</code></pre>
+
+        <div class="demo">
+          <div style="height:220px;border-radius:10px;overflow:hidden;border:1px solid #1f2a44;">
+            <canvas id="c" style="width:100%;height:220px;display:block;background:#071226;"></canvas>
+          </div>
+          <div class="row" style="margin-top:.5rem;">
+            <button id="start-anim">Start</button>
+            <button id="stop-anim" class="secondary">Stop</button>
+          </div>
+          <p class="small">Hi-DPI aware animation with requestAnimationFrame.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p style="text-align:center">S-Tier • Part 2 • JS API Mastery</p>
+  </footer>
+
+  <script>
+    /* -------- DOM demo: render 1k rows with fragment & measure -------- */
+    (function(){
+      const addBtn = document.getElementById("add-rows");
+      const clearBtn = document.getElementById("clear-rows");
+      const list = document.getElementById("big-list");
+      const tpl = document.getElementById("row-template");
+      const out = document.getElementById("render-time");
+
+      if (!addBtn) return;
+
+      addBtn.addEventListener("click", () => {
+        const t0 = performance.now();
+        const frag = document.createDocumentFragment();
+        for (let i = 1; i <= 1000; i++) {
+          const n = tpl.content.cloneNode(true);
+          n.querySelector(".i").textContent = i;
+          frag.appendChild(n);
+        }
+        list.appendChild(frag);
+        const t1 = performance.now();
+        out.textContent = `Rendered 1,000 rows in ${(t1 - t0).toFixed(1)} ms`;
+      });
+
+      clearBtn.addEventListener("click", () => {
+        list.innerHTML = "";
+        out.textContent = "cleared.";
+      });
+
+      // MutationObserver log (quiet)
+      const obs = new MutationObserver(muts => {
+        // console.log("mutations:", muts.length);
+      });
+      obs.observe(list, { childList: true, subtree: true });
+    })();
+
+    /* -------- Events demo: abortable passive mouse tracker -------- */
+    (function(){
+      const start = document.getElementById("start-move");
+      const out = document.getElementById("move-out");
+      if (!start) return;
+
+      start.addEventListener("click", () => {
+        out.textContent = "tracking for 5s… move the mouse";
+        const ac = new AbortController();
+        let n = 0;
+        window.addEventListener("mousemove", (e) => {
+          if (++n % 10 === 0) out.textContent = `x:${e.clientX} y:${e.clientY}`;
+        }, { signal: ac.signal, passive: true });
+
+        setTimeout(() => {
+          ac.abort();
+          out.textContent = "stopped (auto abort).";
+        }, 5000);
+      });
+
+      // Delegation demo: click cards
+      const grid = document.getElementById("grid");
+      grid.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-id]");
+        if (!btn) return;
+        out.textContent = `delegated click → ${btn.dataset.id}`;
+      });
+    })();
+
+    /* -------- Fetch patterns demo (no network dependency) -------- */
+    (function(){
+      const status = document.getElementById("fetch-status");
+      const btnTimeout = document.getElementById("simulate-timeout");
+      const btnRetry = document.getElementById("simulate-retry");
+
+      // Mock fetch that never resolves to trigger timeout/abort
+      function mockNever() {
+        return new Promise(() => {});
+      }
+
+      // Mock fetch that fails twice then succeeds
+      let attempts = 0;
+      function mockFlaky() {
+        attempts++;
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            if (attempts < 3) reject(new TypeError("NetworkError (simulated)"));
+            else resolve(new Response(JSON.stringify({ ok:true, tries: attempts }), { headers: { "Content-Type": "application/json" } }));
+          }, 350);
+        });
+      }
+
+      async function fetchWithTimeoutMock(ms = 800) {
+        const ac = new AbortController();
+        const timer = setTimeout(() => ac.abort(), ms);
+        try {
+          // never resolves; abort triggers catch
+          await mockNever({ signal: ac.signal });
+          return "unexpected";
+        } catch (err) {
+          if (err.name === "AbortError") return "aborted (timeout)";
+          return "error: " + err.message;
+        } finally { clearTimeout(timer); }
+      }
+
+      async function fetchRetryMock(attempts = 3, backoff = 300) {
+        try {
+          const res = await mockFlaky();
+          const json = await res.json();
+          return `success after ${json.tries} tries`;
+        } catch (err) {
+          if (attempts <= 1) throw err;
+          await new Promise(r => setTimeout(r, backoff));
+          return fetchRetryMock(attempts - 1, backoff * 2);
+        }
+      }
+
+      btnTimeout.addEventListener("click", async () => {
+        status.textContent = "running timeout…";
+        const msg = await fetchWithTimeoutMock(900);
+        status.innerHTML = `Timeout demo → <span class="ok">${msg}</span>`;
+      });
+
+      btnRetry.addEventListener("click", async () => {
+        status.textContent = "running retry…";
+        attempts = 0;
+        try {
+          const msg = await fetchRetryMock(3, 250);
+          status.innerHTML = `Retry demo → <span class="ok">${msg}</span>`;
+        } catch (e) {
+          status.innerHTML = `Retry demo → <span class="bad">failed: ${e.message}</span>`;
+        }
+      });
+    })();
+
+    /* -------- Storage demo: versioned save/load -------- */
+    (function(){
+      const KEY = "settings.v2";
+      const inp = document.getElementById("theme-input");
+      const save = document.getElementById("save-theme");
+      const load = document.getElementById("load-theme");
+      const out = document.getElementById("theme-out");
+
+      function saveSettings(obj){
+        const payload = { v:2, savedAt: Date.now(), data: obj };
+        localStorage.setItem(KEY, JSON.stringify(payload));
+      }
+      function loadSettings(){
+        const raw = localStorage.getItem(KEY);
+        if (!raw) return null;
+        const p = JSON.parse(raw);
+        if (p.v !== 2) { /* migrate if needed */ }
+        return p.data;
+      }
+
+      save.addEventListener("click", () => {
+        const theme = (inp.value || "light").trim();
+        saveSettings({ theme });
+        out.textContent = `saved: ${theme}`;
+      });
+      load.addEventListener("click", () => {
+        const data = loadSettings();
+        out.textContent = data ? `loaded: ${data.theme}` : "no value";
+      });
+
+      window.addEventListener("storage", e => {
+        if (e.key === KEY) {
+          out.textContent = `changed in another tab: ${e.newValue}`;
+        }
+      });
+    })();
+
+    /* -------- Web Worker demo: count primes -------- */
+    (function(){
+      const input = document.getElementById("prime-input");
+      const btn = document.getElementById("prime-run");
+      const out = document.getElementById("prime-out");
+      if (!btn) return;
+
+      let workerUrl = null, worker = null;
+
+      function ensureWorker(){
+        if (worker) return worker;
+        const code = `
+self.onmessage = (e) => {
+  const limit = e.data|0;
+  const primes = [];
+  outer: for (let i=2;i<=limit;i++){
+    for (let j=2;j*j<=i;j++){ if(i%j===0) continue outer; }
+    primes.push(i);
+    if (i % 20000 === 0) self.postMessage({ type:"progress", i });
+  }
+  self.postMessage({ type:"done", count: primes.length });
+};`;
+        workerUrl = URL.createObjectURL(new Blob([code], { type: "application/javascript" }));
+        worker = new Worker(workerUrl);
+        return worker;
+      }
+
+      btn.addEventListener("click", () => {
+        out.textContent = "working…";
+        const w = ensureWorker();
+        const t0 = performance.now();
+        w.onmessage = (e) => {
+          if (e.data.type === "progress") {
+            out.textContent = `progress: i=${e.data.i}`;
+          } else {
+            const dt = (performance.now() - t0).toFixed(0);
+            out.textContent = `found ${e.data.count} primes in ${dt} ms`;
+          }
+        };
+        w.postMessage(parseInt(input.value || "200000", 10));
+      });
+
+      window.addEventListener("unload", () => {
+        if (worker) { worker.terminate(); URL.revokeObjectURL(workerUrl); }
+      });
+    })();
+
+    /* -------- Canvas demo: hi-DPI animation -------- */
+    (function(){
+      const canvas = document.getElementById("c");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let raf = 0, t = 0;
+
+      function size(){
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = Math.max(1, rect.width * dpr);
+        canvas.height = Math.max(1, rect.height * dpr);
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+      }
+      size(); addEventListener("resize", size);
+
+      function draw() {
+        t += 0.016;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        // background gradient
+        const g = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+        g.addColorStop(0, "#08132a");
+        g.addColorStop(1, "#0a1e3d");
+        ctx.fillStyle = g;
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+
+        // moving circles
+        for (let i=0;i<25;i++){
+          const x = 40 + i*28 + Math.sin(t + i)*12;
+          const y = 110 + Math.cos(t*1.2 + i)*24;
+          ctx.beginPath();
+          ctx.arc(x, y, 8 + (i%5), 0, Math.PI*2);
+          ctx.fillStyle = `hsl(${(i*15 + t*60)%360} 80% 60% / .9)`;
+          ctx.fill();
+        }
+      }
+
+      function loop(){ draw(); raf = requestAnimationFrame(loop); }
+
+      document.getElementById("start-anim").addEventListener("click", () => {
+        if (!raf) loop();
+      });
+      document.getElementById("stop-anim").addEventListener("click", () => {
+        cancelAnimationFrame(raf); raf = 0;
+      });
+    })();
+  </script>
+</body>
+</html>
