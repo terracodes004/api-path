@@ -1,17 +1,17 @@
-const CACHE_NAME = "js-api-mastery-v1";
+const CACHE_NAME = "api-path-cache-v1";
 const ASSETS = [
-  "index.html",
-  "s-tier.html",
-  "a-tier.html",
-  "b-tier.html",
-  "c-tier.html",
-  "d-tier.html",
-  "f-tier.html",
-  "style.css",
-  "manifest.json"
+  "./",
+  "./index.html",
+  "./style.css",
+  "./s-tier.html",
+  "./a-tier.html",
+  "./b-tier.html",
+  "./c-tier.html",
+  "./d-tier.html",
+  "./f-tier.html"
 ];
 
-// Install: cache everything
+// Install event - cache files
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -21,19 +21,20 @@ self.addEventListener("install", event => {
   self.skipWaiting();
 });
 
-// Activate: clear old caches
+// Activate event - clean old caches
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.map(key => {
-        if (key !== CACHE_NAME) return caches.delete(key);
-      }))
+      Promise.all(
+        keys.filter(key => key !== CACHE_NAME)
+            .map(key => caches.delete(key))
+      )
     )
   );
   self.clients.claim();
 });
 
-// Fetch: serve from cache, fallback to network
+// Fetch event - serve from cache, fallback to network
 self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request).then(response => {
