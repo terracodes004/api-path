@@ -8,33 +8,114 @@
 </head>
 <body>
   <header>
-    <h1>F-Tier APIs - Part 2</h1>
-    <p>Obsolete, deprecated, and insecure APIs. 🚨</p>
+    <h1>F-Tier JavaScript APIs (Part 2)</h1>
+    <p>Obsolete, Experimental, or Barely Useful APIs</p>
   </header>
 
   <main>
-    <!-- WebVR v1 -->
-    <section>
-      <h2>🕶️ WebVR API (Deprecated)</h2>
-      <p id="webvr">Checking WebVR support...</p>
-      <script>
-        if ('getVRDisplays' in navigator) {
-          navigator.getVRDisplays().then(displays => {
-            document.getElementById("webvr").textContent =
-              displays.length ? "WebVR supported (but deprecated)" : "No VR displays found.";
-          });
-        } else {
-          document.getElementById("webvr").textContent = "WebVR not supported (replaced by WebXR).";
-        }
-      </script>
+    <section class="lesson">
+      <h2>1. Battery Status API (Deprecated)</h2>
+      <p>
+        This API once allowed websites to detect your battery percentage and charging status.
+        It was <strong>deprecated due to privacy concerns</strong> and is now removed from most browsers.
+      </p>
+      <pre><code>
+// Deprecated example
+navigator.getBattery?.().then(battery => {
+  console.log("Battery level:", battery.level * 100 + "%");
+});
+      </code></pre>
     </section>
 
-    <!-- AppCache -->
-    <section>
-      <h2>📦 AppCache (Obsolete)</h2>
-      <p>Application Cache is no longer supported in most browsers.  
-      Use Service Workers instead.</p>
-      <pre><code>&lt;html manifest="offline.appcache"&gt;</code></pre>
+    <section class="lesson">
+      <h2>2. Network Information API</h2>
+      <p>
+        Provided details about the user’s network type (wifi, 4g, etc.).  
+        Today it’s only supported in some Chromium-based browsers, and it is very unreliable.
+      </p>
+      <pre><code>
+if ('connection' in navigator) {
+  console.log("Effective network type:", navigator.connection.effectiveType);
+}
+      </code></pre>
     </section>
 
-    <!-- execCommand -->
+    <section class="lesson">
+      <h2>3. Ambient Light Sensor API</h2>
+      <p>
+        Experimental API to detect the ambient light around the device.  
+        Could be used to adjust brightness, but has <strong>serious privacy risks</strong>.
+      </p>
+      <pre><code>
+if ('AmbientLightSensor' in window) {
+  try {
+    const sensor = new AmbientLightSensor();
+    sensor.addEventListener('reading', () => {
+      console.log("Ambient light:", sensor.illuminance);
+    });
+    sensor.start();
+  } catch (err) {
+    console.error("Sensor error:", err);
+  }
+}
+      </code></pre>
+    </section>
+
+    <section class="lesson">
+      <h2>4. Device Orientation Events (Legacy)</h2>
+      <p>
+        Still around, but modern sites use the <strong>Generic Sensor API</strong> instead.
+        This legacy version often requires permissions and varies across browsers.
+      </p>
+      <pre><code>
+window.addEventListener("deviceorientation", event => {
+  console.log("Alpha:", event.alpha, "Beta:", event.beta, "Gamma:", event.gamma);
+});
+      </code></pre>
+    </section>
+
+    <section class="lesson">
+      <h2>5. VR Display API (Obsolete)</h2>
+      <p>
+        The old VRDisplay API was replaced by <strong>WebXR</strong>.  
+        Modern VR/AR projects should <em>always</em> use WebXR instead.
+      </p>
+      <pre><code>
+// Obsolete VRDisplay example
+if ('getVRDisplays' in navigator) {
+  navigator.getVRDisplays().then(displays => {
+    console.log("VR Displays:", displays);
+  });
+}
+      </code></pre>
+    </section>
+
+    <section class="lesson">
+      <h2>6. MediaStream Image Capture API</h2>
+      <p>
+        Lets you capture still images from a camera video stream.  
+        Rarely used directly — most projects use WebRTC or MediaRecorder instead.
+      </p>
+      <pre><code>
+if ('ImageCapture' in window) {
+  navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+    const track = stream.getVideoTracks()[0];
+    const imageCapture = new ImageCapture(track);
+    imageCapture.takePhoto().then(blob => {
+      console.log("Photo captured:", blob);
+    });
+  });
+}
+      </code></pre>
+    </section>
+  </main>
+
+  <footer>
+    <nav>
+      <a href="f-tier.html">⬅️ Back to F-Tier Part 1</a> |
+      <a href="index.html">🏠 Home</a>
+    </nav>
+    <p>Made for Offline Learning | 2025</p>
+  </footer>
+</body>
+</html>
