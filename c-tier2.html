@@ -3,104 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>B-Tier APIs - Part 2</title>
+  <title>C-Tier APIs - Part 2</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>B-Tier APIs - Part 2</h1>
-    <p>More practical APIs that are nice to know but not always essential.</p>
+    <h1>C-Tier JavaScript APIs (Part 2)</h1>
+    <p>Interesting but situational APIs — useful in edge cases.</p>
   </header>
 
   <main>
-    <!-- Battery Status API -->
-    <section>
-      <h2>🔋 Battery Status API</h2>
-      <p id="batteryInfo">Checking battery...</p>
-      <script>
-        if (navigator.getBattery) {
-          navigator.getBattery().then(battery => {
-            function updateBattery() {
-              document.getElementById("batteryInfo").textContent =
-                `Level: ${(battery.level * 100).toFixed(0)}% | Charging: ${battery.charging}`;
-            }
-            updateBattery();
-            battery.addEventListener("levelchange", updateBattery);
-            battery.addEventListener("chargingchange", updateBattery);
-          });
-        } else {
-          document.getElementById("batteryInfo").textContent = "Battery API not supported.";
-        }
-      </script>
-    </section>
+    <article>
+      <h2>1. Battery Status API (Deprecated in some browsers)</h2>
+      <p>Lets you check device battery levels. (Works in some browsers like Firefox, but deprecated in Chrome.)</p>
 
-    <!-- Screen API -->
-    <section>
-      <h2>🖥️ Screen API</h2>
-      <p id="screenInfo">Getting screen info...</p>
-      <script>
-        function updateScreenInfo() {
-          document.getElementById("screenInfo").textContent =
-            `Width: ${screen.width}, Height: ${screen.height}, Orientation: ${screen.orientation.type}`;
-        }
-        updateScreenInfo();
-        screen.orientation.addEventListener("change", updateScreenInfo);
-      </script>
-    </section>
+      <pre><code>
+navigator.getBattery().then(battery => {
+  console.log("Battery level:", battery.level * 100 + "%");
+  battery.addEventListener("levelchange", () => {
+    console.log("Battery updated:", battery.level * 100 + "%");
+  });
+});
+      </code></pre>
+    </article>
 
-    <!-- Vibration API -->
-    <section>
-      <h2>📳 Vibration API</h2>
-      <p>
-        Makes your device vibrate (only works on supported devices like smartphones).
-      </p>
-      <button onclick="navigator.vibrate([300, 100, 300])">Vibrate!</button>
-    </section>
+    <article>
+      <h2>2. Network Information API</h2>
+      <p>Provides info about the user's connection type and speed.</p>
 
-    <!-- Speech Synthesis API -->
-    <section>
-      <h2>🗣️ Speech Synthesis API</h2>
-      <p>Convert text to speech.</p>
-      <input id="speechText" type="text" value="Hello, I am the Speech Synthesis API!">
-      <button onclick="speakText()">Speak</button>
-      <script>
-        function speakText() {
-          let text = document.getElementById("speechText").value;
-          let utterance = new SpeechSynthesisUtterance(text);
-          speechSynthesis.speak(utterance);
-        }
-      </script>
-    </section>
+      <pre><code>
+if (navigator.connection) {
+  console.log("Effective connection type:", navigator.connection.effectiveType);
+  console.log("Downlink speed:", navigator.connection.downlink, "Mbps");
+}
+      </code></pre>
+    </article>
 
-    <!-- BroadcastChannel API -->
-    <section>
-      <h2>📡 BroadcastChannel API</h2>
-      <p>Communicate between browser tabs (open multiple tabs to test).</p>
-      <input id="bcMessage" type="text" placeholder="Type a message">
-      <button onclick="sendMessage()">Send to other tabs</button>
-      <p id="bcOutput"></p>
-      <script>
-        const channel = new BroadcastChannel("demo_channel");
-        channel.onmessage = (event) => {
-          document.getElementById("bcOutput").textContent = "Received: " + event.data;
-        };
-        function sendMessage() {
-          const msg = document.getElementById("bcMessage").value;
-          channel.postMessage(msg);
-        }
-      </script>
-    </section>
+    <article>
+      <h2>3. Screen Orientation API</h2>
+      <p>Lets you detect and lock the orientation of a device screen.</p>
 
-    <!-- Navigation -->
-    <hr>
-    <nav class="part-navigation">
-      <a href="b-tier.html">⬅ Back to Part 1</a>
-      <a href="index.html">🏠 Home</a>
-    </nav>
+      <pre><code>
+console.log("Current orientation:", screen.orientation.type);
+
+screen.orientation.addEventListener("change", () => {
+  console.log("Orientation changed:", screen.orientation.type);
+});
+      </code></pre>
+    </article>
+
+    <article>
+      <h2>4. Gamepad API (extra feature)</h2>
+      <p>Checks connected controllers.</p>
+
+      <pre><code>
+window.addEventListener("gamepadconnected", (e) => {
+  console.log("Gamepad connected:", e.gamepad.id);
+});
+      </code></pre>
+    </article>
+
+    <article>
+      <h2>5. Idle Detection API (Experimental)</h2>
+      <p>Detects when a user is away from device. (Not widely supported yet.)</p>
+
+      <pre><code>
+if ("IdleDetector" in window) {
+  const detector = new IdleDetector();
+  detector.addEventListener("change", () => {
+    console.log("User state:", detector.userState);
+    console.log("Screen state:", detector.screenState);
+  });
+  detector.start();
+}
+      </code></pre>
+    </article>
   </main>
 
   <footer>
-    <p>Made for Offline Learning | 2025</p>
+    <p><a href="c-tier.html">⬅ Back to C-Tier Part 1</a> | 
+    <a href="index.html">🏠 Home</a></p>
   </footer>
 </body>
 </html>
