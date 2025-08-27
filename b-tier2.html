@@ -3,109 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>S-Tier APIs - Part 2</title>
+  <title>B-Tier APIs - Part 2</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>S-Tier JavaScript APIs (Part 2)</h1>
-    <p>Exploring more of the most powerful and game-changing APIs.</p>
+    <h1>B-Tier JavaScript APIs (Part 2)</h1>
+    <p>Solid APIs that are helpful but more situational than S or A tier.</p>
   </header>
 
   <main>
     <article>
-      <h2>1. File System Access API</h2>
-      <p>The <strong>File System Access API</strong> lets websites read and write 
-      files directly on the user’s device (with permission).</p>
+      <h2>1. Broadcast Channel API</h2>
+      <p>Lets multiple browser tabs or windows of the same origin communicate.</p>
 
       <pre><code>
-async function saveFile() {
-  const handle = await window.showSaveFilePicker({
-    suggestedName: "example.txt",
-    types: [{ description: "Text Files", accept: { "text/plain": [".txt"] } }]
-  });
+const channel = new BroadcastChannel("demo");
+channel.postMessage("Hello from Tab 1!");
 
-  const writable = await handle.createWritable();
-  await writable.write("Hello from S-Tier Part 2!");
-  await writable.close();
-}
-
-saveFile();
+channel.onmessage = (e) => {
+  console.log("Message received:", e.data);
+};
       </code></pre>
-      <p><strong>Note:</strong> Only works in Chromium-based browsers.</p>
     </article>
 
     <article>
-      <h2>2. File Handling API</h2>
-      <p>The <strong>File Handling API</strong> allows installed web apps 
-      (via PWA) to become file handlers for certain file types.</p>
+      <h2>2. Page Visibility API</h2>
+      <p>Detects when a page is visible or hidden (useful for pausing videos or saving resources).</p>
 
       <pre><code>
-// In manifest.json:
-// "file_handlers": [{
-//   "action": "/open-file",
-//   "accept": { "text/plain": [".txt"] }
-// }]
-
-// Example listener:
-window.launchQueue.setConsumer((launchParams) => {
-  for (const file of launchParams.files) {
-    console.log("Opened file:", file.name);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    console.log("Page is hidden. Pause tasks...");
+  } else {
+    console.log("Page is visible. Resume tasks...");
   }
 });
       </code></pre>
     </article>
 
     <article>
-      <h2>3. Shape Detection API</h2>
-      <p>The <strong>Shape Detection API</strong> gives access to 
-      text, barcode, and face detection in images.</p>
+      <h2>3. Fullscreen API</h2>
+      <p>Allows elements to be displayed in full screen.</p>
 
       <pre><code>
-if ("FaceDetector" in window) {
-  const faceDetector = new FaceDetector();
-  const img = document.querySelector("img");
-
-  faceDetector.detect(img)
-    .then(faces => console.log("Faces detected:", faces))
-    .catch(err => console.error("Error:", err));
+function goFullScreen() {
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  }
 }
       </code></pre>
-      <p><strong>Use case:</strong> AR apps, barcode scanners, 
-      smart camera apps.</p>
     </article>
 
     <article>
-      <h2>4. WebHID API</h2>
-      <p>The <strong>WebHID API</strong> allows web apps to 
-      communicate with Human Interface Devices (HID) like 
-      game controllers, VR equipment, or custom hardware.</p>
+      <h2>4. Clipboard API (Advanced)</h2>
+      <p>More advanced use of the Clipboard API (reading content instead of just writing).</p>
 
       <pre><code>
-const devices = await navigator.hid.requestDevice({ filters: [] });
-console.log("Connected devices:", devices);
+async function pasteText() {
+  const text = await navigator.clipboard.readText();
+  console.log("Pasted from clipboard:", text);
+}
+
+pasteText();
       </code></pre>
     </article>
 
     <article>
-      <h2>5. WebBluetooth API</h2>
-      <p>The <strong>WebBluetooth API</strong> lets your website 
-      connect to Bluetooth devices securely.</p>
+      <h2>5. CSS Font Loading API</h2>
+      <p>Allows dynamic loading and controlling of fonts with JavaScript.</p>
 
       <pre><code>
-navigator.bluetooth.requestDevice({
-  acceptAllDevices: true
-}).then(device => {
-  console.log("Connected to:", device.name);
+const font = new FontFace("MyFont", "url(myfont.woff2)");
+font.load().then((loadedFont) => {
+  document.fonts.add(loadedFont);
+  console.log("Font loaded:", loadedFont.family);
 });
       </code></pre>
-      <p><strong>Use case:</strong> IoT devices, wearables, 
-      smart home gadgets.</p>
     </article>
   </main>
 
   <footer>
-    <p><a href="s-tier.html">⬅ Back to S-Tier Part 1</a> | 
+    <p><a href="b-tier.html">⬅ Back to B-Tier Part 1</a> | 
     <a href="index.html">🏠 Home</a></p>
   </footer>
 </body>
