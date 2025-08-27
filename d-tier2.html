@@ -1,126 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>D-Tier APIs - Part 2</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>D-Tier APIs – Part 2</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>D-Tier APIs - Part 2</h1>
-    <p>Experimental and rarely supported APIs.</p>
+    <h1>D-Tier JavaScript APIs (Part 2)</h1>
+    <p>Exploring highly experimental or specialized APIs.</p>
   </header>
 
   <main>
-    <!-- Ambient Light Sensor API -->
-    <section>
-      <h2>💡 Ambient Light Sensor API</h2>
-      <p id="lightLevel">Light level: Not supported</p>
-      <script>
-        if ('AmbientLightSensor' in window) {
-          try {
-            const sensor = new AmbientLightSensor();
-            sensor.onreading = () => {
-              document.getElementById("lightLevel").textContent =
-                `Light: ${sensor.illuminance} lux`;
-            };
-            sensor.onerror = (e) => {
-              document.getElementById("lightLevel").textContent =
-                "Sensor error: " + e.error.name;
-            };
-            sensor.start();
-          } catch (err) {
-            document.getElementById("lightLevel").textContent = "Ambient Light API not allowed.";
-          }
-        }
-      </script>
-    </section>
+    <article>
+      <h2>1. Ambient Light Sensor API</h2>
+      <p>
+        The <strong>AmbientLightSensor</strong> interface from the Sensor APIs provides
+        live data on ambient light (lux). It’s <em>very experimental</em> and not widely supported.:contentReference[oaicite:0]{index=0}
+      </p>
+      <pre><code>
+if ("AmbientLightSensor" in window) {
+  try {
+    const sensor = new AmbientLightSensor();
+    sensor.addEventListener("reading", () =>
+      console.log("Current light level:", sensor.illuminance)
+    );
+    sensor.addEventListener("error", (e) =>
+      console.error("Sensor error:", e.error.name)
+    );
+    sensor.start();
+  } catch (err) {
+    console.error("Ambient Light Sensor not allowed:", err);
+  }
+} else {
+  console.log("Ambient Light Sensor API not supported.");
+}
+      </code></pre>
+      <p><em>Note:</em> Requires HTTPS and user permissions.:contentReference[oaicite:1]{index=1}</p>
+    </article>
 
-    <!-- Proximity Sensor API -->
-    <section>
-      <h2>📡 Proximity Sensor API</h2>
-      <p id="proximityInfo">Proximity: Not supported</p>
-      <script>
-        if ('ondeviceproximity' in window) {
-          window.addEventListener("deviceproximity", (event) => {
-            document.getElementById("proximityInfo").textContent =
-              `Distance: ${event.value} cm`;
-          });
-        }
-      </script>
-    </section>
+    <article>
+      <h2>2. Proximity Sensor API</h2>
+      <p>
+        Allows detection of nearby objects to the device without physical contact. Very
+        limited browser support and mostly deprecated.:contentReference[oaicite:2]{index=2}
+      </p>
+      <pre><code>
+if ("ondeviceproximity" in window) {
+  window.addEventListener("deviceproximity", (e) =>
+    console.log("Proximity distance:", e.value)
+  );
+} else {
+  console.log("Proximity API not supported.");
+}
+      </code></pre>
+    </article>
 
-    <!-- Network Information Advanced -->
-    <section>
-      <h2>🌐 Network Information API (Advanced)</h2>
-      <p id="networkInfo"></p>
-      <script>
-        function updateNetworkInfo() {
-          const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-          if (conn) {
-            document.getElementById("networkInfo").textContent =
-              `Type: ${conn.effectiveType}, Downlink: ${conn.downlink} Mb/s`;
-          } else {
-            document.getElementById("networkInfo").textContent = "Not supported";
-          }
-        }
-        updateNetworkInfo();
-      </script>
-    </section>
+    <article>
+      <h2>3. Battery Status API (Legacy)</h2>
+      <p>
+        Provides battery level and charging status. Largely deprecated due to privacy risks, still supported in some legacy browsers.:contentReference[oaicite:3]{index=3}
+      </p>
+      <pre><code>
+navigator.getBattery().then(batt => {
+  function update() {
+    console.log("Level:", batt.level * 100 + "%");
+    console.log("Charging:", batt.charging);
+  }
+  update();
+  batt.addEventListener("levelchange", update);
+  batt.addEventListener("chargingchange", update);
+});
+      </code></pre>
+      <p><em>Warning:</em> May be removed or blocked entirely. Avoid for modern development.:contentReference[oaicite:4]{index=4}</p>
+    </article>
 
-    <!-- Media Session API -->
-    <section>
-      <h2>🎵 Media Session API</h2>
-      <p>Controls media playback with OS controls.</p>
-      <audio id="sampleAudio" controls src="https://www.w3schools.com/html/horse.mp3"></audio>
-      <script>
-        if ('mediaSession' in navigator) {
-          const audio = document.getElementById("sampleAudio");
-          navigator.mediaSession.metadata = new MediaMetadata({
-            title: "Sample Song",
-            artist: "Demo Artist",
-            album: "Test Album",
-            artwork: [{ src: "https://via.placeholder.com/96", sizes: "96x96", type: "image/png" }]
-          });
-          navigator.mediaSession.setActionHandler("play", () => audio.play());
-          navigator.mediaSession.setActionHandler("pause", () => audio.pause());
-        }
-      </script>
-    </section>
+    <article>
+      <h2>4. Network Information API</h2>
+      <p>
+        Offers details about the user’s connection type (e.g., "4g") and downlink speed in Mbps. Useful for adaptive loading.:contentReference[oaicite:5]{index=5}
+      </p>
+      <pre><code>
+const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+if (conn) {
+  console.log("Connection type:", conn.effectiveType);
+  console.log("Downlink speed:", conn.downlink, "Mbps");
+} else {
+  console.log("Network Information API not supported.");
+}
+      </code></pre>
+    </article>
 
-    <!-- Idle Detection API -->
-    <section>
-      <h2>⏳ Idle Detection API</h2>
-      <p id="idleInfo">Idle detection: Not supported</p>
-      <script>
-        if ('IdleDetector' in window) {
-          (async () => {
-            try {
-              const idleDetector = new IdleDetector();
-              await idleDetector.start({ threshold: 60000 }); // 1 min
-              idleDetector.onchange = () => {
-                document.getElementById("idleInfo").textContent =
-                  `User: ${idleDetector.userState}, Screen: ${idleDetector.screenState}`;
-              };
-            } catch (err) {
-              document.getElementById("idleInfo").textContent = "Idle API blocked: " + err;
-            }
-          })();
-        }
-      </script>
-    </section>
+    <article>
+      <h2>5. Media Session API</h2>
+      <p>
+        Enables enhanced media control via OS-level media keys (e.g., pause/play) and lock-screen metadata.:contentReference[oaicite:6]{index=6}
+      </p>
+      <pre><code>
+const audio = new Audio("example.mp3");
+audio.controls = true;
+document.body.appendChild(audio);
 
-    <!-- Navigation -->
-    <hr>
-    <nav class="part-navigation">
-      <a href="d-tier.html">⬅ Back to Part 1</a>
-      <a href="index.html">🏠 Home</a>
-    </nav>
+if ("mediaSession" in navigator) {
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: "Song Title",
+    artist: "Artist Name",
+    album: "Album Name",
+    artwork: [{ src: "cover.jpg", sizes: "96x96", type: "image/jpg" }]
+  });
+  navigator.mediaSession.setActionHandler("play", () => audio.play());
+  navigator.mediaSession.setActionHandler("pause", () => audio.pause());
+}
+      </code></pre>
+    </article>
   </main>
 
   <footer>
-    <p>Made for Offline Learning | 2025</p>
+    <p>
+      <a href="d-tier.html">⬅ Back to D-Tier Part 1</a> | 
+      <a href="index.html">🏠 Home</a>
+    </p>
   </footer>
 </body>
 </html>
