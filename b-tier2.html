@@ -3,104 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>B-Tier APIs - Part 2</title>
+  <title>S-Tier APIs - Part 2</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>B-Tier APIs - Part 2</h1>
-    <p>More practical APIs that are nice to know but not always essential.</p>
+    <h1>S-Tier JavaScript APIs (Part 2)</h1>
+    <p>Exploring more of the most powerful and game-changing APIs.</p>
   </header>
 
   <main>
-    <!-- Battery Status API -->
-    <section>
-      <h2>🔋 Battery Status API</h2>
-      <p id="batteryInfo">Checking battery...</p>
-      <script>
-        if (navigator.getBattery) {
-          navigator.getBattery().then(battery => {
-            function updateBattery() {
-              document.getElementById("batteryInfo").textContent =
-                `Level: ${(battery.level * 100).toFixed(0)}% | Charging: ${battery.charging}`;
-            }
-            updateBattery();
-            battery.addEventListener("levelchange", updateBattery);
-            battery.addEventListener("chargingchange", updateBattery);
-          });
-        } else {
-          document.getElementById("batteryInfo").textContent = "Battery API not supported.";
-        }
-      </script>
-    </section>
+    <article>
+      <h2>1. File System Access API</h2>
+      <p>The <strong>File System Access API</strong> lets websites read and write 
+      files directly on the user’s device (with permission).</p>
 
-    <!-- Screen API -->
-    <section>
-      <h2>🖥️ Screen API</h2>
-      <p id="screenInfo">Getting screen info...</p>
-      <script>
-        function updateScreenInfo() {
-          document.getElementById("screenInfo").textContent =
-            `Width: ${screen.width}, Height: ${screen.height}, Orientation: ${screen.orientation.type}`;
-        }
-        updateScreenInfo();
-        screen.orientation.addEventListener("change", updateScreenInfo);
-      </script>
-    </section>
+      <pre><code>
+async function saveFile() {
+  const handle = await window.showSaveFilePicker({
+    suggestedName: "example.txt",
+    types: [{ description: "Text Files", accept: { "text/plain": [".txt"] } }]
+  });
 
-    <!-- Vibration API -->
-    <section>
-      <h2>📳 Vibration API</h2>
-      <p>
-        Makes your device vibrate (only works on supported devices like smartphones).
-      </p>
-      <button onclick="navigator.vibrate([300, 100, 300])">Vibrate!</button>
-    </section>
+  const writable = await handle.createWritable();
+  await writable.write("Hello from S-Tier Part 2!");
+  await writable.close();
+}
 
-    <!-- Speech Synthesis API -->
-    <section>
-      <h2>🗣️ Speech Synthesis API</h2>
-      <p>Convert text to speech.</p>
-      <input id="speechText" type="text" value="Hello, I am the Speech Synthesis API!">
-      <button onclick="speakText()">Speak</button>
-      <script>
-        function speakText() {
-          let text = document.getElementById("speechText").value;
-          let utterance = new SpeechSynthesisUtterance(text);
-          speechSynthesis.speak(utterance);
-        }
-      </script>
-    </section>
+saveFile();
+      </code></pre>
+      <p><strong>Note:</strong> Only works in Chromium-based browsers.</p>
+    </article>
 
-    <!-- BroadcastChannel API -->
-    <section>
-      <h2>📡 BroadcastChannel API</h2>
-      <p>Communicate between browser tabs (open multiple tabs to test).</p>
-      <input id="bcMessage" type="text" placeholder="Type a message">
-      <button onclick="sendMessage()">Send to other tabs</button>
-      <p id="bcOutput"></p>
-      <script>
-        const channel = new BroadcastChannel("demo_channel");
-        channel.onmessage = (event) => {
-          document.getElementById("bcOutput").textContent = "Received: " + event.data;
-        };
-        function sendMessage() {
-          const msg = document.getElementById("bcMessage").value;
-          channel.postMessage(msg);
-        }
-      </script>
-    </section>
+    <article>
+      <h2>2. File Handling API</h2>
+      <p>The <strong>File Handling API</strong> allows installed web apps 
+      (via PWA) to become file handlers for certain file types.</p>
 
-    <!-- Navigation -->
-    <hr>
-    <nav class="part-navigation">
-      <a href="b-tier.html">⬅ Back to Part 1</a>
-      <a href="index.html">🏠 Home</a>
-    </nav>
+      <pre><code>
+// In manifest.json:
+// "file_handlers": [{
+//   "action": "/open-file",
+//   "accept": { "text/plain": [".txt"] }
+// }]
+
+// Example listener:
+window.launchQueue.setConsumer((launchParams) => {
+  for (const file of launchParams.files) {
+    console.log("Opened file:", file.name);
+  }
+});
+      </code></pre>
+    </article>
+
+    <article>
+      <h2>3. Shape Detection API</h2>
+      <p>The <strong>Shape Detection API</strong> gives access to 
+      text, barcode, and face detection in images.</p>
+
+      <pre><code>
+if ("FaceDetector" in window) {
+  const faceDetector = new FaceDetector();
+  const img = document.querySelector("img");
+
+  faceDetector.detect(img)
+    .then(faces => console.log("Faces detected:", faces))
+    .catch(err => console.error("Error:", err));
+}
+      </code></pre>
+      <p><strong>Use case:</strong> AR apps, barcode scanners, 
+      smart camera apps.</p>
+    </article>
+
+    <article>
+      <h2>4. WebHID API</h2>
+      <p>The <strong>WebHID API</strong> allows web apps to 
+      communicate with Human Interface Devices (HID) like 
+      game controllers, VR equipment, or custom hardware.</p>
+
+      <pre><code>
+const devices = await navigator.hid.requestDevice({ filters: [] });
+console.log("Connected devices:", devices);
+      </code></pre>
+    </article>
+
+    <article>
+      <h2>5. WebBluetooth API</h2>
+      <p>The <strong>WebBluetooth API</strong> lets your website 
+      connect to Bluetooth devices securely.</p>
+
+      <pre><code>
+navigator.bluetooth.requestDevice({
+  acceptAllDevices: true
+}).then(device => {
+  console.log("Connected to:", device.name);
+});
+      </code></pre>
+      <p><strong>Use case:</strong> IoT devices, wearables, 
+      smart home gadgets.</p>
+    </article>
   </main>
 
   <footer>
-    <p>Made for Offline Learning | 2025</p>
+    <p><a href="s-tier.html">⬅ Back to S-Tier Part 1</a> | 
+    <a href="index.html">🏠 Home</a></p>
   </footer>
 </body>
 </html>
