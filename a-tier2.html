@@ -8,90 +8,115 @@
 </head>
 <body>
   <header>
-    <h1>A-Tier JavaScript APIs (Part 2)</h1>
-    <p>Continuing our deep dive into important A-Tier APIs</p>
+    <h1>A-Tier APIs - Part 2</h1>
+    <p>More useful APIs to make your apps smarter & interactive.</p>
   </header>
 
   <main>
-    <!-- Notification API -->
-    <section class="lesson">
-      <h2>📢 Notification API</h2>
-      <p>The <strong>Notification API</strong> lets web apps display system notifications outside the browser window.</p>
-      
-      <pre><code class="language-js">
-// Request permission
-Notification.requestPermission().then(permission => {
-  if (permission === "granted") {
-    new Notification("Hello!", {
-      body: "This is a web notification.",
-      icon: "icon.png"
-    });
-  }
-});
-      </code></pre>
-      
-      <p><strong>Use case:</strong> Reminders, chat alerts, background task updates.</p>
-    </section>
-
     <!-- Clipboard API -->
-    <section class="lesson">
+    <section>
       <h2>📋 Clipboard API</h2>
-      <p>The <strong>Clipboard API</strong> enables copy, cut, and paste operations.</p>
-
-      <pre><code class="language-js">
-// Copy to clipboard
-navigator.clipboard.writeText("Copied text!").then(() => {
-  console.log("Text copied!");
-});
-
-// Paste from clipboard
-navigator.clipboard.readText().then(text => {
-  console.log("Pasted:", text);
-});
-      </code></pre>
-
-      <p><strong>Use case:</strong> Copy buttons, password managers, text editors.</p>
-    </section>
-
-    <!-- History API -->
-    <section class="lesson">
-      <h2>🕘 History API</h2>
-      <p>The <strong>History API</strong> allows manipulation of the browser session history.</p>
-
-      <pre><code class="language-js">
-// Add a new entry
-history.pushState({ page: 1 }, "title 1", "?page=1");
-
-// Navigate back and forward
-history.back();   // Go back
-history.forward(); // Go forward
-
-// Listen for state changes
-window.onpopstate = event => {
-  console.log("State:", event.state);
-};
-      </code></pre>
-
-      <p><strong>Use case:</strong> Single Page Applications (SPAs), dynamic navigation.</p>
+      <p>
+        The Clipboard API lets you read from or write text to the system clipboard.
+        Very useful for "copy" buttons.
+      </p>
+      <button onclick="copyText()">Copy Text</button>
+      <input id="clipInput" type="text" value="Hello from Clipboard API!">
+      <script>
+        function copyText() {
+          let input = document.getElementById("clipInput");
+          navigator.clipboard.writeText(input.value)
+            .then(() => alert("Copied: " + input.value))
+            .catch(err => alert("Failed: " + err));
+        }
+      </script>
     </section>
 
     <!-- Fullscreen API -->
-    <section class="lesson">
+    <section>
       <h2>🖥️ Fullscreen API</h2>
-      <p>The <strong>Fullscreen API</strong> lets you display elements in full-screen mode.</p>
+      <p>
+        Make an element take over the whole screen. Great for videos, games, or presentations.
+      </p>
+      <button onclick="goFullscreen()">Go Fullscreen</button>
+      <div id="fsBox" style="width:200px;height:100px;background:#4caf50;color:#fff;text-align:center;line-height:100px;">
+        Fullscreen Me
+      </div>
+      <script>
+        function goFullscreen() {
+          let box = document.getElementById("fsBox");
+          if (box.requestFullscreen) {
+            box.requestFullscreen();
+          }
+        }
+      </script>
+    </section>
 
-      <pre><code class="language-js">
-const elem = document.documentElement;
+    <!-- Page Visibility API -->
+    <section>
+      <h2>👀 Page Visibility API</h2>
+      <p>
+        Detect when the user switches tabs. Useful for pausing videos or saving battery.
+      </p>
+      <p id="visibilityStatus">Current status: visible</p>
+      <script>
+        document.addEventListener("visibilitychange", () => {
+          document.getElementById("visibilityStatus").textContent =
+            "Current status: " + document.visibilityState;
+        });
+      </script>
+    </section>
 
-function openFullscreen() {
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  }
-}
+    <!-- Device Orientation API -->
+    <section>
+      <h2>📱 Device Orientation API</h2>
+      <p>
+        Detect device tilt & motion (works on phones/tablets with sensors).
+      </p>
+      <p id="orientationData">Rotate your device to see updates...</p>
+      <script>
+        window.addEventListener("deviceorientation", (event) => {
+          document.getElementById("orientationData").textContent =
+            `Alpha: ${event.alpha.toFixed(2)} | Beta: ${event.beta.toFixed(2)} | Gamma: ${event.gamma.toFixed(2)}`;
+        });
+      </script>
+    </section>
 
-function closeFullscreen() {
-  if (document.exitFullscreen) {
-    document.exitFullscreen();
-  }
-}
-      </code
+    <!-- Intersection Observer -->
+    <section>
+      <h2>🔍 Intersection Observer</h2>
+      <p>
+        Detect when elements scroll into view (good for animations or lazy loading).
+      </p>
+      <div class="observer-box" style="height:200px;background:#ddd;margin-bottom:20px;">
+        Scroll down to reveal...
+      </div>
+      <div id="hiddenBox" style="height:100px;background:#ff5722;color:#fff;text-align:center;line-height:100px;opacity:0;">
+        I just became visible!
+      </div>
+      <script>
+        let hiddenBox = document.getElementById("hiddenBox");
+        let observer = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              hiddenBox.style.opacity = "1";
+            }
+          });
+        });
+        observer.observe(hiddenBox);
+      </script>
+    </section>
+
+    <!-- Navigation -->
+    <hr>
+    <nav class="part-navigation">
+      <a href="a-tier.html">⬅ Back to Part 1</a>
+      <a href="index.html">🏠 Home</a>
+    </nav>
+  </main>
+
+  <footer>
+    <p>Made for Offline Learning | 2025</p>
+  </footer>
+</body>
+</html>
