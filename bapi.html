@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your First Web APIs</title>
+    <style>
+        /* CSS: The "Style" */
+        :root {
+            --bg-color: #2c3e50;
+            --card-color: #34495e;
+            --text-color: #ecf0f1;
+            --accent-color: #3498db;
+            --danger-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 1rem;
+            flex-grow: 1;
+        }
+
+        header {
+            background-color: var(--card-color);
+            text-align: center;
+            padding: 2rem 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 2.5rem;
+        }
+
+        .card {
+            background-color: var(--card-color);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .card h2 {
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+        .fact-container {
+            font-size: 1.25rem;
+            font-style: italic;
+            margin-bottom: 1.5rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .btn.danger {
+            background-color: var(--danger-color);
+        }
+
+        .btn.danger:hover {
+            background-color: #c0392b;
+        }
+
+        .favorites-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .favorites-list li {
+            background-color: var(--bg-color);
+            margin-bottom: 0.5rem;
+            padding: 1rem;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .favorites-list li button {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            color: #bdc3c7;
+            margin-top: auto;
+        }
+
+        /* Responsive Design: The "Flexibility" */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Welcome to Your First APIs</h1>
+        <p>A fun lesson in fetching data, manipulating the page, and storing information.</p>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>The Cat Fact Generator</h2>
+            <p>**Using the Fetch API & DOM API**</p>
+            <div id="fact-container" class="fact-container">
+                Click "Get New Fact" to load your first cat fact!
+            </div>
+            <div class="actions">
+                <button id="get-fact-btn" class="btn">Get New Fact</button>
+                <button id="save-fact-btn" class="btn">Save as Favorite</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Your Favorite Facts</h2>
+            <p>**Using the localStorage API & DOM API**</p>
+            <ul id="favorites-list" class="favorites-list">
+                <!-- Favorites will be added here by JavaScript -->
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Web API Tutorial | Made with Vanilla JavaScript</p>
+    </footer>
+
+    <script>
+        // JavaScript: The "Intelligence"
+
+        // Step 1: Select the elements from our HTML (using the DOM API)
+        const getFactBtn = document.getElementById('get-fact-btn');
+        const saveFactBtn = document.getElementById('save-fact-btn');
+        const factContainer = document.getElementById('fact-container');
+        const favoritesList = document.getElementById('favorites-list');
+
+        let currentFact = '';
+
+        // Step 2: Create functions to perform actions
+
+        // Function to fetch a new cat fact (using the Fetch API)
+        async function fetchNewCatFact() {
+            try {
+                // Tell the user we are loading
+                factContainer.textContent = 'Loading a new fact...';
+                
+                // Use fetch() to get data from the server
+                const response = await fetch('https://catfact.ninja/fact');
+
+                // Check if the response was successful
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Convert the response to a JavaScript object
+                const data = await response.json();
+                
+                // Save the new fact and display it on the page
+                currentFact = data.fact;
+                factContainer.textContent = currentFact;
+
+            } catch (error) {
+                console.error('Could not fetch fact:', error);
+                factContainer.textContent = 'Failed to load a cat fact.';
+            }
+        }
+
+        // Function to save the current fact to localStorage
+        function saveFavoriteFact() {
+            if (currentFact) {
+                // Get existing favorites from localStorage or create an empty array
+                const favorites = JSON.parse(localStorage.getItem('catFacts')) || [];
+
+                // Add the new fact if it's not already there
+                if (!favorites.includes(currentFact)) {
+                    favorites.push(currentFact);
+                    localStorage.setItem('catFacts', JSON.stringify(favorites));
+                    renderFavorites(); // Update the list on the page
+                }
+            } else {
+                alert('Please get a fact first before saving!');
+            }
+        }
+
+        // Function to render the favorites list from localStorage
+        function renderFavorites() {
+            // Clear the list first
+            favoritesList.innerHTML = '';
+            
+            // Get favorites from localStorage
+            const favorites = JSON.parse(localStorage.getItem('catFacts')) || [];
+
+            // Loop through each favorite fact and add it to the list (using the DOM API)
+            favorites.forEach(fact => {
+                const li = document.createElement('li');
+                li.textContent = fact;
+
+                // Add a delete button for each favorite
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => {
+                    deleteFavoriteFact(fact);
+                };
+
+                li.appendChild(deleteBtn);
+                favoritesList.appendChild(li);
+            });
+        }
+        
+        // Function to delete a fact from localStorage and re-render
+        function deleteFavoriteFact(factToDelete) {
+            let favorites = JSON.parse(localStorage.getItem('catFacts')) || [];
+            favorites = favorites.filter(fact => fact !== factToDelete);
+            localStorage.setItem('catFacts', JSON.stringify(favorites));
+            renderFavorites();
+        }
+
+        // Step 3: Add event listeners to our buttons
+        getFactBtn.addEventListener('click', fetchNewCatFact);
+        saveFactBtn.addEventListener('click', saveFavoriteFact);
+
+        // Step 4: Run initial setup
+        renderFavorites(); // Load and display favorites on page load
+
+    </script>
+</body>
+</html>
